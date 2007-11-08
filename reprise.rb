@@ -1,6 +1,4 @@
-require 'rubygems'
-require 'sinatra'
-require 'redcloth'
+%w(rubygems sinatra redcloth).each { |lib| require lib }
 
 TITLE = 'Reprise'
 
@@ -27,9 +25,9 @@ end
 
 private
 
-  # Returns all textual entries with file names.
+  # Returns all textual entries with file names and meta data.
   def entries
-    Dir[File.dirname(__FILE__) + '/entries/*'].reverse.collect do |file|
+    Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse.collect do |file|
       { :body => File.read(file) }.merge(meta_from_filename(file))
     end
   end
@@ -52,13 +50,16 @@ private
     string.gsub(/[^\w\s-]/, '').gsub(/\s+/, '-').downcase
   end
 
+  # Parses text from markdown to html.
   def markdown(text)
     RedCloth.new(text).to_html(:markdown)
   end
 
+  # View layout. Takes a title and the main content.
   def layout(title, content)
     %Q(
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
 %html
   %head
     %title #{title}
@@ -68,6 +69,7 @@ private
     )
   end
 
+  # View for the index page.
   def index
     content = %q(
     %h1= TITLE
@@ -81,6 +83,7 @@ private
     layout(TITLE, content)
   end
 
+  # View for entry pages.
   def entry
     content = %q(
     %h1
@@ -94,6 +97,7 @@ private
     layout("#{TITLE}: #{@entry[:title]}", content)
   end
 
+  # Stylesheet.
   def style
     %q(
 body {
