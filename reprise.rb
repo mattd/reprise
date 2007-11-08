@@ -2,7 +2,7 @@
 
 sessions :off
 
-TITLE = 'Reprise'
+TITLE = 'Research Journal'
 
 get 404 do
   haml fourofour
