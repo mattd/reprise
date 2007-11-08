@@ -1,6 +1,12 @@
 %w(rubygems sinatra redcloth).each { |lib| require lib }
 
+sessions :off
+
 TITLE = 'Reprise'
+
+get 404 do
+  haml fourofour
+end
 
 get '/style.css' do
   header 'Content-Type' => 'text/css'
@@ -20,7 +26,12 @@ get '/:slug' do
       break
     end
   end
-  @entry ? haml(entry) : status(404)
+  if @entry
+    haml entry
+  else
+    status 404
+    haml fourofour
+  end
 end
 
 private
@@ -95,6 +106,17 @@ private
     .entry= markdown(@entry[:body])
     )
     layout("#{TITLE}: #{@entry[:title]}", content)
+  end
+
+  # View for the 404 page.
+  def fourofour
+    content = %q(
+    %h1= TITLE
+    Resource not found. Go back to
+    %a{ :href => '/' } the front
+    page.
+    )
+    layout("#{TITLE}: Resource not found", content)
   end
 
   # Stylesheet.
