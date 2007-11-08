@@ -4,6 +4,11 @@ require 'redcloth'
 
 TITLE = 'Reprise'
 
+get '/style.css' do
+  header 'Content-Type' => 'text/css'
+  style
+end
+
 get '/' do
   @entries = entries
   haml index
@@ -57,6 +62,7 @@ private
 %html
   %head
     %title #{title}
+    %link{ :href => '/style.css', :rel => 'stylesheet', :type => 'text/css' }
   %body
     #{content}
     )
@@ -86,4 +92,13 @@ private
     .entry= markdown(@entry[:body])
     )
     layout("#{TITLE}: #{@entry[:title]}", content)
+  end
+
+  def style
+    %q(
+body {
+  font-family: monospace;
+  width: 45em;
+}
+    )
   end
