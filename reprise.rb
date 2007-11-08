@@ -8,11 +8,6 @@ get 404 do
   haml fourofour
 end
 
-get '/style.css' do
-  header 'Content-Type' => 'text/css'
-  style
-end
-
 get '/' do
   @entries = entries
   haml index
@@ -74,7 +69,8 @@ private
 %html
   %head
     %title #{title}
-    %link{ :href => '/style.css', :rel => 'stylesheet', :type => 'text/css' }
+    %style{ :type => 'text/css' }
+      body { font-family: monospace; width: 45em; }
   %body
     #{content}
     )
@@ -117,14 +113,4 @@ private
     page.
     )
     layout("#{TITLE}: Resource not found", content)
-  end
-
-  # Stylesheet.
-  def style
-    %q(
-body {
-  font-family: monospace;
-  width: 45em;
-}
-    )
   end
