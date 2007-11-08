@@ -1,4 +1,4 @@
-%w(rubygems sinatra redcloth).each { |lib| require lib }
+%w(rubygems sinatra bluecloth).each { |lib| require lib }
 
 sessions :off
 
@@ -63,7 +63,7 @@ private
 
   # Parses text from markdown to html.
   def markdown(text)
-    RedCloth.new(text).to_html(:markdown)
+    BlueCloth.new(text).to_html
   end
 
   # View layout. Takes a title and the main content.
