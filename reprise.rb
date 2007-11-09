@@ -19,7 +19,7 @@
 # DEALINGS IN THE SOFTWARE.
 #
 #
-# Reprise - As minimal a blog as possible
+# Reprise - As minimal a hAtom blog as possible
 #
 # Usage:
 #
