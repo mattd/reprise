@@ -100,9 +100,9 @@ private
       body { font-family: monospace; width: 45em; } abbr { border: 0 }
   %body
     #{content}
-  %address.author.vcard
-    %a.url.fn{ :href => '#{AUTHOR[:url]}' } #{AUTHOR[:name]}
-    )
+    %address.author.vcard
+      %a.url.fn{ :href => '#{AUTHOR[:url]}' } #{AUTHOR[:name]}
+      )
   end
 
   # View for the index page.
