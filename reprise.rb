@@ -23,7 +23,7 @@
 #
 # Usage:
 #
-#   1. gem install sinatra haml -y
+#   1. gem install sinatra haml bluecloth -y
 #   2. wget redflavor.com/reprise.rb
 #   3. mkdir entries
 #   4. vi entries/YYYY.MM.DD.Title.Goes.Here
