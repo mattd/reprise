@@ -112,8 +112,7 @@ private
     - @entries.each do |entry|
       .hentry
         %h2
-          %abbr.updated{ :title => entry[:date].iso8601 }
-            = entry[:date]
+          %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
           %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
             = entry[:title]
         .entry-content= htmlify(entry[:body])
@@ -129,8 +128,7 @@ private
         = TITLE
     .hentry
       %h2
-        %abbr.updated{ :title => @entry[:date].iso8601 }
-          = @entry[:date]
+        %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
         %span.entry-title= @entry[:title]
       .entry-content= htmlify(@entry[:body])
     )
