@@ -34,6 +34,7 @@
 sessions :off
 
 TITLE = 'Reprise'
+AUTHOR = { :name => 'Eivind Uggedal', :url => 'http://redflavor.com' }
 
 get 404 do
   haml fourofour
@@ -72,9 +73,9 @@ private
   # Returns an entry's filename, date, title, and slug.
   def meta_from_filename(file)
     filename = File.basename(file)
-    results = filename.scan(/([\d]{4}.\d\d.\d\d)\.(.+)/).first
-    date = Date.parse(results[0])
-    title = results[1].gsub(/\./, ' ')
+    results = filename.scan(/([\d]{4}).(\d\d).(\d\d)\.(.+)/).first
+    date = Time.local(results[0], results[1], results[2])
+    title = results[3].gsub(/\./, ' ')
 
     { :filename => filename,
       :date => date, 
@@ -101,9 +102,11 @@ private
   %head
     %title #{title}
     %style{ :type => 'text/css' }
-      body { font-family: monospace; width: 45em; }
+      body { font-family: monospace; width: 45em; } abbr { border: 0 }
   %body
     #{content}
+  %address.author.vcard
+    %a.url.fn{ :href => '#{AUTHOR[:url]}' } #{AUTHOR[:name]}
     )
   end
 
@@ -112,11 +115,13 @@ private
     content = %q(
     %h1= TITLE
     - @entries.each do |entry|
-      %h2
-        = "#{entry[:date]}:"
-        %a{ :href => "/#{entry[:slug]}" }
-          = entry[:title]
-      .entry= htmlify(entry[:body])
+      .hentry
+        %h2
+          %abbr.updated{ :title => entry[:date].iso8601 }
+            = entry[:date]
+          %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
+            = entry[:title]
+        .entry-content= htmlify(entry[:body])
     )
     layout(TITLE, content)
   end
@@ -127,10 +132,12 @@ private
     %h1
       %a{ :href => '/' }
         = TITLE
-    %h2
-      = "#{@entry[:date]}:"
-      = @entry[:title]
-    .entry= htmlify(@entry[:body])
+    .hentry
+      %h2
+        %abbr.updated{ :title => @entry[:date].iso8601 }
+          = @entry[:date]
+        %span.entry-title= @entry[:title]
+      .entry-content= htmlify(@entry[:body])
     )
     layout("#{TITLE}: #{@entry[:title]}", content)
   end
@@ -145,3 +152,9 @@ private
     )
     layout("#{TITLE}: Resource not found", content)
   end
+
+class Time
+  def to_s
+    self.strftime('%Y-%m-%d')
+  end
+end
