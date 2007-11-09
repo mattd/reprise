@@ -23,13 +23,13 @@
 #
 # Usage:
 #
-#   1. gem install sinatra haml bluecloth -y
+#   1. gem install sinatra haml bluecloth rubypants -y
 #   2. wget redflavor.com/reprise.rb
 #   3. mkdir entries
 #   4. vi entries/YYYY.MM.DD.Title.Goes.Here
 #   5. ruby reprise.rb
 
-%w(rubygems sinatra bluecloth).each { |lib| require lib }
+%w(rubygems sinatra bluecloth rubypants).each { |lib| require lib }
 
 sessions :off
 
@@ -87,9 +87,9 @@ private
     string.gsub(/[^\w\s-]/, '').gsub(/\s+/, '-').downcase
   end
 
-  # Parses text from markdown to html.
-  def markdown(text)
-    BlueCloth.new(text).to_html
+  # Parses text from mardown to nice html.
+  def htmlify(text)
+    RubyPants.new(BlueCloth.new(text).to_html).to_html
   end
 
   # View layout. Takes a title and the main content.
@@ -116,7 +116,7 @@ private
         = "#{entry[:date]}:"
         %a{ :href => "/#{entry[:slug]}" }
           = entry[:title]
-      .entry= markdown(entry[:body])
+      .entry= htmlify(entry[:body])
     )
     layout(TITLE, content)
   end
@@ -130,7 +130,7 @@ private
     %h2
       = "#{@entry[:date]}:"
       = @entry[:title]
-    .entry= markdown(@entry[:body])
+    .entry= htmlify(@entry[:body])
     )
     layout("#{TITLE}: #{@entry[:title]}", content)
   end
