@@ -69,7 +69,7 @@ private
   def meta_from_filename(file)
     filename = File.basename(file)
     results = filename.scan(/([\d]{4}).(\d\d).(\d\d)\.(.+)/).first
-    date = Time.local(results[0], results[1], results[2])
+    date = Time.local(*results[0..2])
     title = results[3].gsub(/\./, ' ')
 
     { :filename => filename,
