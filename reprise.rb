@@ -53,12 +53,7 @@ get '/:slug' do
       break
     end
   end
-  if @entry
-    haml entry
-  else
-    status 404
-    haml fourofour
-  end
+  @entry ? haml(entry) : (status 404; haml fourofour)
 end
 
 private
