@@ -97,7 +97,10 @@ private
   %head
     %title #{title}
     %style{ :type => 'text/css' }
-      body { font-family: monospace; width: 45em; } abbr { border: 0 }
+      body{font-family:monospace;width:94%;}abbr{border:0}
+      \\.entry-content{-moz-column-width:35em;-moz-column-gap:1.5em;
+      \\-webkit-column-width:35em;-webkit-column-gap:1.5em;}
+      h2{border-bottom:0.05em solid #999;}
   %body
     #{content}
     %address.author.vcard
