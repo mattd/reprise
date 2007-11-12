@@ -33,7 +33,7 @@
 
 sessions :off
 
-TITLE = 'Reprise'
+TITLE = 'Research Journal'
 AUTHOR = { :name => 'Eivind Uggedal', :url => 'http://redflavor.com' }
 
 get 404 do
