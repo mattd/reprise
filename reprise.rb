@@ -41,8 +41,13 @@ get 404 do
 end
 
 get '/' do
-  @entries = entries
+  @entries, @tasklist = entries, tasklist
   haml index
+end
+
+get '/style.css' do
+  header 'Content-Type' => 'text/css'
+  Sass::Engine.new(stylesheet).render
 end
 
 get '/:slug' do
@@ -78,9 +83,9 @@ private
       :slug => slugify(title) }
   end
 
-  # Returns an array of todo items.
-  def todolist
-    File.readlines(File.dirname(__FILE__) + '/todo').gsub('*', '').strip
+  # Returns an array of task items.
+  def tasklist(file=File.dirname(__FILE__) + '/tasks')
+    File.read(file).split("\n\n") if File.exists? file
   end
 
   # Removes non-alphanumeric characters and substitutes spaces for hyphens.
@@ -101,11 +106,7 @@ private
 %html
   %head
     %title #{title}
-    %style{ :type => 'text/css' }
-      body{font-family:monospace;width:94%;}abbr{border:0}
-      \\.entry-content{-moz-column-width:35em;-moz-column-gap:1.5em;
-      \\-webkit-column-width:35em;-webkit-column-gap:1.5em;}
-      h2{border-bottom:0.05em solid #999;}
+    %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/style.css' }
   %body
     #{content}
     %address.author.vcard
@@ -113,10 +114,15 @@ private
       )
   end
 
-  # View for the index page.
+  # Haml template for the index page.
   def index
     content = %q(
     %h1= TITLE
+    - if @tasklist && @tasklist.any?
+      %h2 Tasks
+      %ol#tasklist
+        - @tasklist.each do |task|
+          %li= task
     - @entries.each do |entry|
       .hentry
         %h2
@@ -128,7 +134,7 @@ private
     layout(TITLE, content)
   end
 
-  # View for entry pages.
+  # Haml template for entry pages.
   def entry
     content = %q(
     %h1
@@ -143,7 +149,7 @@ private
     layout("#{TITLE}: #{@entry[:title]}", content)
   end
 
-  # View for the 404 page.
+  # Haml template for the 404 page.
   def fourofour
     content = %q(
     %h1= TITLE
@@ -154,6 +160,33 @@ private
     layout("#{TITLE}: Resource not found", content)
   end
 
+  # Sass template for the CSS stylesheet.
+  def stylesheet
+    %q(
+body
+  :font-family monospace
+  :width 94%
+abbr
+  :border 0
+.entry-content, #tasklist
+  :-moz-column-width 35em
+  :-moz-column-gap 1.5em
+  :-webkit-column-width 35em
+  :-webkit-column-gap 1.5em
+h2
+  :border-bottom 0.05em solid #999
+    )
+  end
+
+# Rendering haml templates for HTML 4.01.
+Sinatra::Haml::EventContext.class_eval do
+  def render_haml(template, &block)
+    require 'haml'
+    body ::Haml::Engine.new(template, :autoclose=>[]).render(self, &block)
+  end
+end
+
+# Format of time objects.
 class Time
   def to_s
     self.strftime('%Y-%m-%d')
