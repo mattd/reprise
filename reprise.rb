@@ -78,6 +78,11 @@ private
       :slug => slugify(title) }
   end
 
+  # Returns an array of todo items.
+  def todolist
+    File.readlines(File.dirname(__FILE__) + '/todo').gsub('*', '').strip
+  end
+
   # Removes non-alphanumeric characters and substitutes spaces for hyphens.
   def slugify(string)
     string.gsub(/[^\w\s-]/, '').gsub(/\s+/, '-').downcase
