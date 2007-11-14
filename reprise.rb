@@ -29,7 +29,7 @@
 #   4. vi entries/YYYY.MM.DD.Title.Goes.Here
 #   5. ruby reprise.rb
 
-%w(rubygems sinatra bluecloth rubypants).each { |lib| require lib }
+%w(rubygems sinatra bluecloth rubypants haml).each { |lib| require lib }
 
 sessions :off
 
@@ -180,7 +180,6 @@ h2
   end
 
 # Rendering haml templates for HTML 4.01.
-require 'haml'
 Haml::Engine.class_eval do
   def prerender_tag(name, atomic, attributes)
     "<#{name}#{build_attributes(attributes)}>"
