@@ -107,6 +107,7 @@ private
   %head
     %title #{title}
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/style.css' }
+    %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => '#{TITLE}', :href => 'http://feeds.feedburner.com/redflavor' }
   %body
     #{content}
     %address.author.vcard
@@ -179,10 +180,10 @@ h2
   end
 
 # Rendering haml templates for HTML 4.01.
-Sinatra::Haml::EventContext.class_eval do
-  def render_haml(template, &block)
-    require 'haml'
-    body ::Haml::Engine.new(template, :autoclose=>[]).render(self, &block)
+require 'haml'
+Haml::Engine.class_eval do
+  def prerender_tag(name, atomic, attributes)
+    "<#{name}#{build_attributes(attributes)}>"
   end
 end
 
