@@ -32,7 +32,7 @@
 %w(rubygems sinatra bluecloth rubypants haml).each { |lib| require lib }
 
 sessions :off
-static '/i', 'images'
+static '/images', 'images'
 
 TITLE = 'Research Journal'
 AUTHOR = { :name => 'Eivind Uggedal', :url => 'http://redflavor.com' }
@@ -119,8 +119,8 @@ private
   # Haml template for the index page.
   def index
     content = %q(
-    %a{ :href=> 'http://feeds.feedburner.com/redflavor' }
-      %img.feed{ :src => '/i/feed.icon.png', :alt => 'Subscribe to Newsfeed' }
+    %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
+      %img.feed{ :src => '/images/feed.icon.png', :alt => 'Newsfeed' }
     %h1= TITLE
     - if @tasklist && @tasklist.any?
       %h2 Tasks
