@@ -107,6 +107,7 @@ private
 %html
   %head
     %title #{title}
+    %meta{ 'http-equiv' => 'Content-Type', :content => 'text/html;charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/style.css' }
     %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => '#{TITLE}', :href => 'http://feeds.feedburner.com/redflavor' }
   %body
@@ -119,9 +120,10 @@ private
   # Haml template for the index page.
   def index
     content = %q(
-    %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
-      %img.feed{ :src => '/images/feed.icon.png', :alt => 'Newsfeed' }
-    %h1= TITLE
+    %h1
+      %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
+        %img.feed{ :src => '/images/feed.icon.png', :alt => 'Newsfeed' }
+      = TITLE
     - if @tasklist && @tasklist.any?
       %h2 Tasks
       %ol#tasklist
@@ -168,20 +170,26 @@ private
   def stylesheet
     %q(
 body
-  :font-family monospace
+  :font-size 90%
+  :line-height 1.4
   :width 94%
 abbr
   :border 0
 .entry-content, #tasklist
-  :-moz-column-width 35em
+  :-moz-column-width 30em
   :-moz-column-gap 1.5em
-  :-webkit-column-width 35em
+  :-webkit-column-width 30em
   :-webkit-column-gap 1.5em
 h2
   :border-bottom 0.05em solid #999
 img.feed
   :border 0
   :float right
+p
+  :margin-bottom 0
+p + p
+  :margin-top 0
+  :text-indent 1.1em
     )
   end
 
