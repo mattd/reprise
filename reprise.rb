@@ -180,6 +180,8 @@ abbr
   :-moz-column-gap 1.5em
   :-webkit-column-width 30em
   :-webkit-column-gap 1.5em
+ol li
+  :margin-right 1em
 h2
   :border-bottom 0.05em solid #999
 img.feed
