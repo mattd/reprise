@@ -176,9 +176,9 @@ body
 abbr
   :border 0
 .entry-content, #tasklist
-  :-moz-column-width 30em
+  :-moz-column-width 28em
   :-moz-column-gap 1.5em
-  :-webkit-column-width 30em
+  :-webkit-column-width 28em
   :-webkit-column-gap 1.5em
 ol li
   :margin-right 1em
