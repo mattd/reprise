@@ -1,4 +1,4 @@
-# Copyright (c) 2007 Eivind Uggedal <eu@redflavor.com>
+# Copyright (c) 2007-2008 Eivind Uggedal <eu@redflavor.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -195,7 +195,7 @@ p + p
     )
   end
 
-# Rendering haml templates for HTML 4.01.
+# Monkey patch for rendering haml templates as html.
 Haml::Engine.class_eval do
   def prerender_tag(name, atomic, attributes)
     "<#{name}#{build_attributes(attributes)}>"
