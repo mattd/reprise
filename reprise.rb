@@ -196,9 +196,9 @@ p + p
   end
 
 # Monkey patch for rendering haml templates as html.
-Haml::Engine.class_eval do
+Haml::Precompiler.module_eval do
   def prerender_tag(name, atomic, attributes)
-    "<#{name}#{build_attributes(attributes)}>"
+    "<#{name}#{Haml::Precompiler.build_attributes(@options[:attr_wrapper], attributes)}>"
   end
 end
 
