@@ -170,7 +170,6 @@ private
   def stylesheet
     %q(
 body
-  :font-size 90%
   :line-height 1.4
   :width 94%
 abbr
@@ -182,8 +181,14 @@ abbr
   :-webkit-column-gap 1.5em
 ol li
   :margin-right 1em
-h2
-  :border-bottom 0.05em solid #999
+a
+  :background #ffb
+  :color #000
+h1, h2
+  :font-weight normal
+  a
+    :background #fe7
+    :text-decoration none
 img.feed
   :border 0
   :float right
