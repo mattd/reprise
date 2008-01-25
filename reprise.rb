@@ -31,6 +31,21 @@
 
 %w(rubygems sinatra bluecloth rubypants haml).each { |lib| require lib }
 
+# Format of time objects.
+class Time
+  def to_s
+    self.strftime('%Y-%m-%d')
+  end
+end
+
+# Monkey patch for rendering haml templates as html.
+Haml::Precompiler.module_eval do
+  def prerender_tag(name, atomic, attributes)
+    a = Haml::Precompiler.build_attributes(@options[:attr_wrapper], attributes)
+    "<#{name}#{a}>"
+  end
+end
+
 sessions :off
 static '/images', 'images'
 
@@ -199,17 +214,3 @@ p + p
   :text-indent 1.1em
     )
   end
-
-# Monkey patch for rendering haml templates as html.
-Haml::Precompiler.module_eval do
-  def prerender_tag(name, atomic, attributes)
-    "<#{name}#{Haml::Precompiler.build_attributes(@options[:attr_wrapper], attributes)}>"
-  end
-end
-
-# Format of time objects.
-class Time
-  def to_s
-    self.strftime('%Y-%m-%d')
-  end
-end
