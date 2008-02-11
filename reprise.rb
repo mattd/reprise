@@ -50,7 +50,9 @@ sessions :off
 static '/images', 'images'
 
 TITLE = 'Research Journal'
-AUTHOR = { :name => 'Eivind Uggedal', :url => 'http://redflavor.com' }
+AUTHOR = { :name => 'Eivind Uggedal',
+           :email => 'eu@redflavor.com',
+           :url => 'http://redflavor.com' }
 
 get 404 do
   haml fourofour
@@ -129,6 +131,7 @@ private
     #{content}
     %address.author.vcard
       %a.url.fn{ :href => '#{AUTHOR[:url]}' } #{AUTHOR[:name]}
+      %a.email{ :href => 'mailto:#{AUTHOR[:email]}' } #{AUTHOR[:email]}
       )
   end
 
@@ -212,5 +215,7 @@ p
 p + p
   :margin-top 0
   :text-indent 1.1em
+address
+  :margin 2em 0 0 0
     )
   end
