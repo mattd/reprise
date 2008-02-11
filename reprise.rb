@@ -216,6 +216,7 @@ p + p
   :margin-top 0
   :text-indent 1.1em
 address
+  :font-family monospace
   :margin 2em 0 0 0
     )
   end
