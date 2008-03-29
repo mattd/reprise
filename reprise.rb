@@ -191,7 +191,7 @@ body
   :font-size 90%
   :font-family 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif
   :line-height 1.5
-  :width 94%
+  :padding 0 5em 0 5em
 abbr
   :border 0
 .entry-content, #tasklist
