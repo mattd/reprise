@@ -188,7 +188,9 @@ private
   def stylesheet
     %q(
 body
-  :line-height 1.4
+  :font-size 90%
+  :font-family 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif
+  :line-height 1.5
   :width 94%
 abbr
   :border 0
@@ -203,6 +205,7 @@ a
   :background #ffb
   :color #000
 h1, h2
+  :font-family Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif
   :font-weight normal
   a
     :background #fe7
