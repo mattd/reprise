@@ -29,7 +29,8 @@
 #   4. vi entries/YYYY.MM.DD.Title.Goes.Here
 #   5. ruby reprise.rb
 
-%w(rubygems sinatra bluecloth rubypants haml).each { |lib| require lib }
+$: << File.expand_path("../../sinatra/lib", __FILE__)
+%w(sinatra rubygems bluecloth rubypants haml).each { |lib| require lib }
 
 # Format of time objects.
 class Time
@@ -45,9 +46,6 @@ Haml::Precompiler.module_eval do
     "<#{name}#{a}>"
   end
 end
-
-sessions :off
-static '/images', 'images'
 
 TITLE = 'Research Journal'
 AUTHOR = { :name => 'Eivind Uggedal',
