@@ -57,7 +57,7 @@ get 404 do
 end
 
 get '/' do
-  @entries, @tasklist = entries, tasklist
+  @entries = entries
   haml index
 end
 
@@ -99,11 +99,6 @@ private
       :slug => slugify(title) }
   end
 
-  # Returns an array of task items.
-  def tasklist(file=File.dirname(__FILE__) + '/tasks')
-    File.read(file).split("\n\n") if File.exists? file
-  end
-
   # Removes non-alphanumeric characters and substitutes spaces for hyphens.
   def slugify(string)
     string.gsub(/[^\w\s-]/, '').gsub(/\s+/, '-').downcase
@@ -140,11 +135,6 @@ private
       %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
         %img.feed{ :src => '/images/feed.icon.png', :alt => 'Newsfeed' }
       = TITLE
-    - if @tasklist && @tasklist.any?
-      %h2 Tasks
-      %ol#tasklist
-        - @tasklist.each do |task|
-          %li= task
     - @entries.each do |entry|
       .hentry
         %h2
