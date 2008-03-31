@@ -196,7 +196,7 @@ h1, h2
   :font-family Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif
   :font-weight normal
   a
-    :background #fe7
+    :background #fdb
     :text-decoration none
 img.feed
   :border 0
