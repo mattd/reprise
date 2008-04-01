@@ -133,7 +133,7 @@ private
     content = %q(
     %h1
       %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
-        %img.feed{ :src => '/images/feed.icon.png', :alt => 'Newsfeed' }
+        %img.feed{ :src => '/feed.icon.png', :alt => 'Newsfeed' }
       = TITLE
     - @entries.each do |entry|
       .hentry
