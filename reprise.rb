@@ -63,7 +63,7 @@ end
 
 get '/style.css' do
   header 'Content-Type' => 'text/css'
-  Sass::Engine.new(stylesheet).render
+  Sass::Engine.new(Sinatra.application.templates[:style]).render
 end
 
 get '/:slug' do
@@ -141,7 +141,7 @@ private
           %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
           %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
             = entry[:title]
-        .entry-content= htmlify(entry[:body])
+        .entry-content~ htmlify(entry[:body])
     )
     layout(TITLE, content)
   end
@@ -156,7 +156,7 @@ private
       %h2
         %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
         %span.entry-title= @entry[:title]
-      .entry-content= htmlify(@entry[:body])
+      .entry-content~ htmlify(@entry[:body])
     )
     layout("#{TITLE}: #{@entry[:title]}", content)
   end
@@ -172,9 +172,11 @@ private
     layout("#{TITLE}: Resource not found", content)
   end
 
-  # Sass template for the CSS stylesheet.
-  def stylesheet
-    %q(
+  use_in_file_templates!
+
+__END__
+
+## style
 body
   :font-size 90%
   :font-family 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif
@@ -182,11 +184,8 @@ body
   :padding 0 5em 0 5em
 abbr
   :border 0
-.entry-content, #tasklist
-  :-moz-column-width 28em
-  :-moz-column-gap 1.5em
-  :-webkit-column-width 28em
-  :-webkit-column-gap 1.5em
+.entry-content
+  :width 40em
 ol li
   :margin-right 1em
 a
@@ -209,5 +208,9 @@ p + p
 address
   :font-family monospace
   :margin 2em 0 0 0
-    )
-  end
+pre > code
+  :background #ffd
+  :border-left 0.3em solid #ddd
+  :display block
+  :font-family 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospaced
+  :padding 1em 1em 1em 2em
