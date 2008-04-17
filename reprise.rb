@@ -128,8 +128,6 @@ __END__
     %address.author.vcard
       %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
       %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
-    %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
-      %img.feed{ :src => '/feed.icon.png', :alt => 'Newsfeed' }
 
 ## index
 %h1
@@ -180,9 +178,6 @@ h1, h2
   a
     :background #fdb
     :text-decoration none
-img.feed
-  :border 0
-  :float right
 p
   :margin-bottom 0
 p + p
