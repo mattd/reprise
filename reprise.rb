@@ -53,12 +53,12 @@ AUTHOR = { :name => 'Eivind Uggedal',
            :url => 'http://redflavor.com' }
 
 get 404 do
-  haml fourofour
+  haml :fourofour
 end
 
 get '/' do
   @entries = entries
-  haml index
+  haml :index
 end
 
 get '/style.css' do
@@ -71,10 +71,11 @@ get '/:slug' do
   entries.each do |entry|
     if entry[:slug] == params[:slug]
       @entry = entry
+      @title = "#{TITLE}: #{entry[:title]}"
       break
     end
   end
-  @entry ? haml(entry) : (status 404; haml fourofour)
+  @entry ? haml(:entry) : (status 404; haml :fourofour)
 end
 
 private
@@ -109,72 +110,54 @@ private
     RubyPants.new(BlueCloth.new(text).to_html).to_html
   end
 
-  # View layout. Takes a title and the main content.
-  def layout(title, content)
-    %Q(
+  use_in_file_templates!
+
+__END__
+
+## layout
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd">
 %html
   %head
-    %title #{title}
+    %title= @title ? @title : TITLE
     %meta{ 'http-equiv' => 'Content-Type', :content => 'text/html;charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/style.css' }
     %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => '#{TITLE}', :href => 'http://feeds.feedburner.com/redflavor' }
   %body
-    #{content}
+    = yield
     %address.author.vcard
-      %a.url.fn{ :href => '#{AUTHOR[:url]}' } #{AUTHOR[:name]}
-      %a.email{ :href => 'mailto:#{AUTHOR[:email]}' } #{AUTHOR[:email]}
-      )
-  end
+      %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
+      %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
+    %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
+      %img.feed{ :src => '/feed.icon.png', :alt => 'Newsfeed' }
 
-  # Haml template for the index page.
-  def index
-    content = %q(
-    %h1
-      %a{ :href=> 'http://feeds.feedburner.com/redflavor', :title => 'Newsfeed' }
-        %img.feed{ :src => '/feed.icon.png', :alt => 'Newsfeed' }
-      = TITLE
-    - @entries.each do |entry|
-      .hentry
-        %h2
-          %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
-          %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
-            = entry[:title]
-        .entry-content~ htmlify(entry[:body])
-    )
-    layout(TITLE, content)
-  end
+## index
+%h1
+  = TITLE
+- @entries.each do |entry|
+  .hentry
+    %h2
+      %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
+      %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
+        = entry[:title]
+    .entry-content~ htmlify(entry[:body])
 
-  # Haml template for entry pages.
-  def entry
-    content = %q(
-    %h1
-      %a{ :href => '/' }
-        = TITLE
-    .hentry
-      %h2
-        %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
-        %span.entry-title= @entry[:title]
-      .entry-content~ htmlify(@entry[:body])
-    )
-    layout("#{TITLE}: #{@entry[:title]}", content)
-  end
+## entry
+%h1
+  %a{ :href => '/' }
+    = TITLE
+.hentry
+  %h2
+    %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
+    %span.entry-title= @entry[:title]
+  .entry-content~ htmlify(@entry[:body])
 
-  # Haml template for the 404 page.
-  def fourofour
-    content = %q(
-    %h1= TITLE
-    Resource not found. Go back to
-    %a{ :href => '/' } the front
-    page.
-    )
-    layout("#{TITLE}: Resource not found", content)
-  end
-
-  use_in_file_templates!
-
-__END__
+## fourofour
+%h1= TITLE
+Resource not found. Go back to
+%a{ :href => '/' } the front
+page.
+)
 
 ## style
 body
