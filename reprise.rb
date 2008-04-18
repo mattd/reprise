@@ -125,28 +125,31 @@ __END__
     %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => '#{TITLE}', :href => 'http://feeds.feedburner.com/redflavor' }
   %body
     = yield
-    %address.author.vcard
-      %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
-      %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
 
 ## index
-%h1
-  = TITLE
+%h1= TITLE
+%address.author.vcard
+  %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
+  %br
+  %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
 - @entries.each do |entry|
   .hentry
+    %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
     %h2
-      %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
       %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
         = entry[:title]
     .entry-content~ htmlify(entry[:body])
 
 ## entry
 %h1
-  %a{ :href => '/' }
-    = TITLE
+  %a{ :href => '/' }= TITLE
+%address.author.vcard
+  %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
+  %br
+  %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
 .hentry
+  %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
   %h2
-    %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
     %span.entry-title= @entry[:title]
   .entry-content~ htmlify(@entry[:body])
 
@@ -162,33 +165,42 @@ body
   :font-size 90%
   :font-family 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif
   :line-height 1.5
-  :padding 0 5em 0 5em
+  :padding 0 10em 0 10em
+  :width 40em
 abbr
   :border 0
-.entry-content
-  :width 40em
-ol li
-  :margin-right 1em
+  :float left
+  :margin 0.3em 0 0 -7em
+ul, ol
+  :padding 0
+blockquote
+  :font-style italic
+  :margin 0
+blockquote em
+  :font-weight bold
 a
   :background #ffb
   :color #000
-h1, h2
+h1, address
+  :font-style normal
+  :text-align center
+address
+  :margin 0 0 2em 0
+ 
+h1, h2, h3, abbr.updated, address
   :font-family Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif
+  :font-style normal
   :font-weight normal
   a
-    :background #fdb
-    :text-decoration none
+    :background transparent
 p
   :margin-bottom 0
 p + p
   :margin-top 0
   :text-indent 1.1em
-address
-  :font-family monospace
-  :margin 2em 0 0 0
 pre > code
-  :background #ffd
-  :border-left 0.3em solid #ddd
+  :border 0.15em solid #eee
+  :border-left 1em solid #eee
   :display block
   :font-family 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospaced
   :padding 1em 1em 1em 2em
