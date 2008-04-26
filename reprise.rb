@@ -30,7 +30,7 @@
 #   5. ruby reprise.rb
 
 $: << File.expand_path("../../sinatra/lib", __FILE__)
-%w(sinatra rubygems bluecloth rubypants haml).each { |lib| require lib }
+%w(sinatra rubygems memcache bluecloth rubypants haml).each { |lib| require lib }
 
 # Format of time objects.
 class Time
@@ -52,6 +52,9 @@ AUTHOR = { :name => 'Eivind Uggedal',
            :email => 'eu@redflavor.com',
            :url => 'http://redflavor.com' }
 ANALYTICS = 'UA-1857692-3'
+
+@@cache ||= MemCache.new('localhost:11211', :namespace => 'reprise')
+EXPIRY = 60*60
 
 get 404 do
   haml :fourofour
@@ -83,8 +86,15 @@ private
 
   # Returns all textual entries with file names and meta data.
   def entries
-    Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse.collect do |file|
-      { :body => File.read(file) }.merge(meta_from_filename(file))
+    if cached = @@cache.get('entries')
+      cached
+    else
+      files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
+      entries = files.collect do |file|
+        { :body => File.read(file) }.merge(meta_from_filename(file))
+      end
+      @@cache.set('entries', entries, EXPIRY)
+      entries
     end
   end
 
