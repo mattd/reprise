@@ -187,14 +187,15 @@ blockquote
 blockquote em
   :font-weight bold
 a
-  :background #ffb
+  :background #ffc
   :color #000
 h1, address
   :font-style normal
   :text-align center
 address
   :margin 0 0 2em 0
- 
+img
+  :margin 1em 0 1em 0
 h1, h2, h3, abbr.updated, address
   :font-family Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif
   :font-style normal
