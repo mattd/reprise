@@ -51,6 +51,7 @@ TITLE = 'Research Journal'
 AUTHOR = { :name => 'Eivind Uggedal',
            :email => 'eu@redflavor.com',
            :url => 'http://redflavor.com' }
+ANALYTICS = 'UA-1857692-3'
 
 get 404 do
   haml :fourofour
@@ -125,6 +126,13 @@ __END__
     %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => '#{TITLE}', :href => 'http://feeds.feedburner.com/redflavor' }
   %body
     = yield
+  %script{ :type => 'text/javascript'}
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  %script{ :type => 'text/javascript'}
+    = "var pageTracker = _gat._getTracker(\"#{ANALYTICS}\");"
+    pageTracker._initData();
+    pageTracker._trackPageview();
 
 ## index
 %h1= TITLE
