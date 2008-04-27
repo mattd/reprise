@@ -70,8 +70,11 @@ get 404 do
 end
 
 get '/' do
-  @entries = entries
-  haml :index
+  cached?('entries') do |cache|
+    @entries = entries
+    res = haml :index
+    cache.set('entries', res, EXPIRY)
+  end
 end
 
 get '/style.css' do
@@ -84,27 +87,24 @@ get '/style.css' do
 end
 
 get '/:slug' do
-  @entry = nil
-  entries.each do |entry|
-    if entry[:slug] == params[:slug]
-      @entry = entry
-      @title = "#{TITLE}: #{entry[:title]}"
-      break
+  cached?(params[:slug]) do |cache|
+    @entry = entries.detect do |entry|
+      entry[:slug] == params[:slug]
     end
+    @title = "#{TITLE}: #{@entry[:title]}" if @entry
+
+    res = (@entry ? haml(:entry) : haml(:fourofour))
+    cache.set(params[:slug], res, EXPIRY)
   end
-  @entry ? haml(:entry) : (status 404; haml :fourofour)
 end
 
 private
 
   # Returns all textual entries with file names and meta data.
   def entries
-    cached?('entries') do |cache|
-      files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
-      entries = files.collect do |file|
-        { :body => File.read(file) }.merge(meta_from_filename(file))
-      end
-      cache.set('entries', entries, EXPIRY)
+    files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
+    files.collect do |file|
+      { :body => File.read(file) }.merge(meta_from_filename(file))
     end
   end
 
