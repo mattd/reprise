@@ -56,6 +56,15 @@ ANALYTICS = 'UA-1857692-3'
 @@cache ||= MemCache.new('localhost:11211', :namespace => 'reprise')
 EXPIRY = 60*60
 
+def cached?(key)
+  if @@cache.active? && cached = @@cache.get(key)
+    cached
+  else
+    yield @@cache
+    @@cache.get(key)
+  end
+end
+
 get 404 do
   haml :fourofour
 end
@@ -67,7 +76,11 @@ end
 
 get '/style.css' do
   header 'Content-Type' => 'text/css'
-  Sass::Engine.new(Sinatra.application.templates[:style]).render
+
+  cached?('style') do |cache|
+    style = Sass::Engine.new(Sinatra.application.templates[:style]).render
+    cache.set('style', style, EXPIRY)
+  end
 end
 
 get '/:slug' do
@@ -86,15 +99,12 @@ private
 
   # Returns all textual entries with file names and meta data.
   def entries
-    if cached = @@cache.get('entries')
-      cached
-    else
+    cached?('entries') do |cache|
       files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
       entries = files.collect do |file|
         { :body => File.read(file) }.merge(meta_from_filename(file))
       end
-      @@cache.set('entries', entries, EXPIRY)
-      entries
+      cache.set('entries', entries, EXPIRY)
     end
   end
 
