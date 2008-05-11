@@ -29,8 +29,7 @@
 #   4. vi entries/YYYY.MM.DD.Title.Goes.Here
 #   5. ruby reprise.rb
 
-$: << File.expand_path("../../sinatra/lib", __FILE__)
-%w(sinatra rubygems memcache bluecloth rubypants haml).each { |lib| require lib }
+%w(rubygems sinatra memcache bluecloth rubypants haml).each { |lib| require lib }
 
 # Format of time objects.
 class Time
@@ -65,7 +64,7 @@ def cached?(key)
   end
 end
 
-get 404 do
+not_found do
   haml :fourofour
 end
 
@@ -91,10 +90,11 @@ get '/:slug' do
     @entry = entries.detect do |entry|
       entry[:slug] == params[:slug]
     end
-    @title = "#{TITLE}: #{@entry[:title]}" if @entry
+    raise Sinatra::NotFound unless @entry
 
-    res = (@entry ? haml(:entry) : haml(:fourofour))
-    cache.set(params[:slug], res, EXPIRY)
+    @title = "#{TITLE}: #{@entry[:title]}"
+
+    cache.set(params[:slug], haml(:entry), EXPIRY)
   end
 end
 
