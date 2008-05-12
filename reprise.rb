@@ -143,7 +143,7 @@ __END__
     %title= @title ? @title : TITLE
     %meta{ 'http-equiv' => 'Content-Type', :content => 'text/html;charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/style.css' }
-    %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => '#{TITLE}', :href => 'http://feeds.feedburner.com/redflavor' }
+    %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => TITLE, :href => 'http://feeds.feedburner.com/redflavor' }
   %body
     = yield
   %script{ :type => 'text/javascript'}
