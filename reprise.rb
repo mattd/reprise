@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # Copyright (c) 2007-2008 Eivind Uggedal <eu@redflavor.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,15 +22,18 @@
 #
 # Reprise - As minimal a hAtom blog as possible
 #
-# Usage:
-#
-#   1. gem install sinatra haml bluecloth rubypants -y
-#   2. wget redflavor.com/reprise.rb
-#   3. mkdir entries
-#   4. vi entries/YYYY.MM.DD.Title.Goes.Here
-#   5. ruby reprise.rb
+#   1. vi entries/YYYY.MM.DD.Entry.Title.in.Camel.Case
+#   2. ./reprise.rb
+#   3. hook up public/ to a web server with rewrites
 
-%w(rubygems sinatra memcache bluecloth rubypants haml).each { |lib| require lib }
+%w(rubygems bluecloth rubypants haml sass stringio time).each { |lib| require lib }
+
+TITLE = 'Research Journal'
+AUTHOR = { :name => 'Eivind Uggedal',
+           :email => 'eu@redflavor.com',
+           :url => 'http://redflavor.com' }
+ANALYTICS = 'UA-1857692-3'
+PUBLIC = File.join(File.dirname(__FILE__), 'public')
 
 # Format of time objects.
 class Time
@@ -38,100 +42,93 @@ class Time
   end
 end
 
-# Monkey patch for rendering haml templates as html.
-Haml::Precompiler.module_eval do
-  def prerender_tag(name, atomic, attributes)
-    a = Haml::Precompiler.build_attributes(@options[:attr_wrapper], attributes)
-    "<#{name}#{a}>"
-  end
-end
+# Stolen from Sinatra
+def templates
+  templates = {}
 
-TITLE = 'Research Journal'
-AUTHOR = { :name => 'Eivind Uggedal',
-           :email => 'eu@redflavor.com',
-           :url => 'http://redflavor.com' }
-ANALYTICS = 'UA-1857692-3'
+  eof = IO.read(caller.first.split(':').first).split('__FILE__').last
+  data = StringIO.new(eof)
 
-@@cache ||= MemCache.new('localhost:11211', :namespace => 'reprise')
-EXPIRY = 60*60
-
-def cached?(key)
-  if @@cache.active? && cached = @@cache.get(key)
-    cached
-  else
-    yield @@cache
-    @@cache.get(key)
-  end
-end
-
-not_found do
-  haml :fourofour
-end
-
-get '/' do
-  cached?('entries') do |cache|
-    @entries = entries
-    res = haml :index
-    cache.set('entries', res, EXPIRY)
-  end
-end
-
-get '/style.css' do
-  header 'Content-Type' => 'text/css'
-
-  cached?('style') do |cache|
-    style = Sass::Engine.new(Sinatra.application.templates[:style]).render
-    cache.set('style', style, EXPIRY)
-  end
-end
-
-get '/:slug' do
-  cached?(params[:slug]) do |cache|
-    @entry = entries.detect do |entry|
-      entry[:slug] == params[:slug]
+  current_template = nil
+  data.each do |line|
+    if line =~ /^##\s?(.*)/
+      current_template = $1.to_sym
+      templates[current_template] = ''
+    elsif current_template
+      templates[current_template] << line
     end
-    raise Sinatra::NotFound unless @entry
+  end
+  templates
+end
 
+def slugify(string)
+  string.gsub(/[^\w\s-]/, '').gsub(/\s+/, '-').downcase
+end
+
+def htmlify(text)
+  RubyPants.new(BlueCloth.new(text).to_html).to_html
+end
+
+def entries
+  files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
+  files.collect do |file|
+    { :body => File.read(file) }.merge(meta_from_filename(file))
+  end
+end
+
+def meta_from_filename(file)
+  filename = File.basename(file)
+  results = filename.scan(/([\d]{4}).(\d\d).(\d\d)\.(.+)/).first
+  date = Time.local(*results[0..2])
+  title = results[3].gsub(/\./, ' ')
+
+  { :filename => filename,
+    :date => date, 
+    :title => title,
+    :slug => slugify(title) }
+end
+
+def write_file(fname, data, root=PUBLIC)
+  File.open(File.join(root, fname), 'w') { |f| f.puts data }
+end
+
+def clean_public
+  FileUtils.rm_r PUBLIC if File.exists? PUBLIC
+  FileUtils.mkdir_p PUBLIC
+end
+
+def generate_style
+  style = Sass::Engine.new(templates[:style]).render
+  write_file('style.css', style)
+end
+
+def render_haml(template, bind)
+  Haml::Engine.new(templates[:layout], {:output => :html4}).render do
+    Haml::Engine.new(templates[template], {:output => :html4}).render(binding)
+  end
+end
+
+def generate_index
+  @entries = entries
+  index = render_haml(:index, binding)
+  write_file('index.html', index)
+end
+
+def generate_entries
+  entries.each do |entry|
+    @entry = entry
     @title = "#{TITLE}: #{@entry[:title]}"
-
-    cache.set(params[:slug], haml(:entry), EXPIRY)
+    rendered = render_haml(:entry, binding)
+    write_file("#{@entry[:slug]}.html", rendered)
   end
 end
 
-private
-
-  # Returns all textual entries with file names and meta data.
-  def entries
-    files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
-    files.collect do |file|
-      { :body => File.read(file) }.merge(meta_from_filename(file))
-    end
-  end
-
-  # Returns an entry's filename, date, title, and slug.
-  def meta_from_filename(file)
-    filename = File.basename(file)
-    results = filename.scan(/([\d]{4}).(\d\d).(\d\d)\.(.+)/).first
-    date = Time.local(*results[0..2])
-    title = results[3].gsub(/\./, ' ')
-
-    { :filename => filename,
-      :date => date, 
-      :title => title,
-      :slug => slugify(title) }
-  end
-
-  # Removes non-alphanumeric characters and substitutes spaces for hyphens.
-  def slugify(string)
-    string.gsub(/[^\w\s-]/, '').gsub(/\s+/, '-').downcase
-  end
-
-  # Parses text from mardown to nice html.
-  def htmlify(text)
-    RubyPants.new(BlueCloth.new(text).to_html).to_html
-  end
-
-  use_in_file_templates!
+if __FILE__ == $0
+  clean_public
+  generate_style
+  generate_index
+  generate_entries
+end
 
 __END__
 
@@ -180,13 +177,6 @@ __END__
   %h2
     %span.entry-title= @entry[:title]
   .entry-content~ htmlify(@entry[:body])
-
-## fourofour
-%h1= TITLE
-Resource not found. Go back to
-%a{ :href => '/' } the front
-page.
-)
 
 ## style
 body
