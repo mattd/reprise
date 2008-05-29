@@ -103,10 +103,15 @@ def generate_style
   write_file('style.css', style)
 end
 
-def render_haml(template, bind)
+def render_haml(template, bind=binding)
   Haml::Engine.new(templates[:layout], {:format => :html4}).render do
     Haml::Engine.new(templates[template], {:format => :html4}).render(bind)
   end
+end
+
+def generate_fourofour
+  fourofour = render_haml(:fourofour, binding)
+  write_file('404.html', fourofour)
 end
 
 def generate_index
@@ -127,6 +132,7 @@ end
 if __FILE__ == $0
   clean_public
   generate_style
+  generate_fourofour
   generate_index
   generate_entries
 end
@@ -179,6 +185,18 @@ __END__
   %h2
     %span.entry-title= @entry[:title]
   .entry-content~ htmlify(@entry[:body])
+
+## fourofour
+%h1
+  %a{ :href => '/' }= TITLE
+%address.author.vcard
+  %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
+  %br
+  %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
+%p
+  Resource not found. Go back to
+  %a{ :href => '/' } the front
+  page.
 
 ## style
 body
