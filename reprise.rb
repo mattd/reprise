@@ -104,7 +104,7 @@ end
 
 def render_haml(template, bind)
   Haml::Engine.new(templates[:layout], {:output => :html4}).render do
-    Haml::Engine.new(templates[template], {:output => :html4}).render(binding)
+    Haml::Engine.new(templates[template], {:output => :html4}).render(bind)
   end
 end
 
@@ -161,7 +161,7 @@ __END__
   .hentry
     %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
     %h2
-      %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
+      %a.entry-title{ :href => "/#{entry[:slug]}.html", :rel => 'bookmark' }
         = entry[:title]
     .entry-content~ htmlify(entry[:body])
 
