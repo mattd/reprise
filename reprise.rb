@@ -23,8 +23,9 @@
 # Reprise - As minimal a hAtom blog as possible
 #
 #   1. vi entries/YYYY.MM.DD.Entry.Title.in.Camel.Case
-#   2. ./reprise.rb
-#   3. hook up public/ to a web server with rewrites
+#   2. gem install BlueCloth rubypants haml
+#   3. ./reprise.rb
+#   4. Hook up public/ to a web server like nginx
 
 %w(rubygems bluecloth rubypants haml sass stringio time).each { |lib| require lib }
 
@@ -157,13 +158,14 @@ __END__
   %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
   %br
   %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
-- @entries.each do |entry|
+- @entries.each_with_index do |entry, i|
   .hentry
     %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
     %h2
       %a.entry-title{ :href => "/#{entry[:slug]}.html", :rel => 'bookmark' }
         = entry[:title]
-    .entry-content~ htmlify(entry[:body])
+    - if i == 0
+      .entry-content~ htmlify(entry[:body])
 
 ## entry
 %h1
