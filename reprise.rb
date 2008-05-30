@@ -168,7 +168,7 @@ __END__
   .hentry
     %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
     %h2
-      %a.entry-title{ :href => "/#{entry[:slug]}.html", :rel => 'bookmark' }
+      %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
         = entry[:title]
     - if i == 0
       .entry-content~ htmlify(entry[:body])
