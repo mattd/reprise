@@ -35,6 +35,7 @@ AUTHOR = { :name => 'Eivind Uggedal',
            :url => 'http://redflavor.com' }
 ANALYTICS = 'UA-1857692-3'
 PUBLIC = File.join(File.dirname(__FILE__), 'public')
+ASSETS = File.join(File.dirname(__FILE__), 'assets')
 
 # Format of time objects.
 class Time
@@ -129,12 +130,18 @@ def generate_entries
   end
 end
 
+
+def populate_assets
+  FileUtils.cp_r "#{ASSETS}/.", PUBLIC
+end
+
 if __FILE__ == $0
   clean_public
   generate_style
   generate_fourofour
   generate_index
   generate_entries
+  populate_assets
 end
 
 __END__
