@@ -1,0 +1,11 @@
+Reprise - As minimal a hAtom blog as possible
+
+  1. vi entries/YYYY.MM.DD.Entry.Title.in.Camel.Case
+  2. gem install BlueCloth rubypants haml
+  3. ./reprise.rb
+  4. Hook up public/ to a web server like nginx
+  5. Rewrite requests from /.+/ to /.+\.html/:
+
+       if (-f $request_filename.html) {
+               rewrite (.*) $1.html break;
+       }
