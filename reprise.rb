@@ -103,7 +103,7 @@ def generate_entries
 end
 
 
-def populate_assets
+def distribute_assets
   FileUtils.cp_r "#{ASSETS}/.", PUBLIC
 end
 
@@ -113,7 +113,7 @@ if __FILE__ == $0
   generate_fourofour
   generate_index
   generate_entries
-  populate_assets
+  distribute_assets
 end
 
 __END__
