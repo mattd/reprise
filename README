@@ -1,0 +1,5 @@
+Reprise - As minimal a hAtom blog as possible
+
+  1. vi entries/YYYY.MM.DD.Entry.Title.in.Camel.Case
+  2. gem install sinatra BlueCloth rubypants haml
+  3. ruby reprise.rb
