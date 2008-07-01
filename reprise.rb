@@ -1,35 +1,10 @@
-# Copyright (c) 2007-2008 Eivind Uggedal <eu@redflavor.com>
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to
-# deal in the Software without restriction, including without limitation the
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-# sell copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
-#
-# Reprise - As minimal a hAtom blog as possible
-#
-# Usage:
-#
-#   1. gem install sinatra haml bluecloth rubypants -y
-#   2. wget redflavor.com/reprise.rb
-#   3. mkdir entries
-#   4. vi entries/YYYY.MM.DD.Title.Goes.Here
-#   5. ruby reprise.rb
+%w(rubygems sinatra bluecloth rubypants haml sass).each { |lib| require lib }
 
-%w(rubygems sinatra memcache bluecloth rubypants haml).each { |lib| require lib }
+TITLE = 'Research Journal'
+AUTHOR = { :name => 'Eivind Uggedal',
+           :email => 'eu@redflavor.com',
+           :url => 'http://redflavor.com' }
+ANALYTICS = 'UA-1857692-3'
 
 # Format of time objects.
 class Time
@@ -38,64 +13,30 @@ class Time
   end
 end
 
-# Monkey patch for rendering haml templates as html.
-Haml::Precompiler.module_eval do
-  def prerender_tag(name, atomic, attributes)
-    a = Haml::Precompiler.build_attributes(@options[:attr_wrapper], attributes)
-    "<#{name}#{a}>"
-  end
-end
-
-TITLE = 'Research Journal'
-AUTHOR = { :name => 'Eivind Uggedal',
-           :email => 'eu@redflavor.com',
-           :url => 'http://redflavor.com' }
-ANALYTICS = 'UA-1857692-3'
-
-@@cache ||= MemCache.new('localhost:11211', :namespace => 'reprise')
-EXPIRY = 60*60
-
-def cached?(key)
-  if @@cache.active? && cached = @@cache.get(key)
-    cached
-  else
-    yield @@cache
-    @@cache.get(key)
-  end
-end
-
 not_found do
   haml :fourofour
 end
 
 get '/' do
-  cached?('entries') do |cache|
-    @entries = entries
-    res = haml :index
-    cache.set('entries', res, EXPIRY)
-  end
+  @entries = entries
+  haml :index
 end
 
 get '/style.css' do
   header 'Content-Type' => 'text/css'
 
-  cached?('style') do |cache|
-    style = Sass::Engine.new(Sinatra.application.templates[:style]).render
-    cache.set('style', style, EXPIRY)
-  end
+  Sass::Engine.new(Sinatra.application.templates[:style]).render
 end
 
 get '/:slug' do
-  cached?(params[:slug]) do |cache|
-    @entry = entries.detect do |entry|
-      entry[:slug] == params[:slug]
-    end
-    raise Sinatra::NotFound unless @entry
-
-    @title = "#{TITLE}: #{@entry[:title]}"
-
-    cache.set(params[:slug], haml(:entry), EXPIRY)
+  @entry = entries.detect do |entry|
+    entry[:slug] == params[:slug]
   end
+  raise Sinatra::NotFound unless @entry
+
+  @title = "#{TITLE}: #{@entry[:title]}"
+
+  haml :entry
 end
 
 private
@@ -160,13 +101,14 @@ __END__
   %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
   %br
   %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
-- @entries.each do |entry|
+- @entries.each_with_index do |entry, i|
   .hentry
     %abbr.updated{ :title => entry[:date].iso8601 }= entry[:date]
     %h2
       %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
         = entry[:title]
-    .entry-content~ htmlify(entry[:body])
+    - if i == 0
+      .entry-content~ htmlify(entry[:body])
 
 ## entry
 %h1
@@ -182,11 +124,16 @@ __END__
   .entry-content~ htmlify(@entry[:body])
 
 ## fourofour
-%h1= TITLE
-Resource not found. Go back to
-%a{ :href => '/' } the front
-page.
-)
+%h1
+  %a{ :href => '/' }= TITLE
+%address.author.vcard
+  %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
+  %br
+  %a.email{ :href => "mailto:#{AUTHOR[:email]}" }= AUTHOR[:email]
+%p
+  Resource not found. Go back to
+  %a{ :href => '/' } the front
+  page.
 
 ## style
 body
