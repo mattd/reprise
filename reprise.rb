@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 %w(rubygems bluecloth rubypants haml sass stringio time).each { |lib| require lib }
 
-TITLE = 'Research Journal'
+TITLE = 'Redflavor Journal'
 AUTHOR = { :name => 'Eivind Uggedal',
            :email => 'eu@redflavor.com',
            :url => 'http://redflavor.com' }
