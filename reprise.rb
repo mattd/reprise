@@ -77,7 +77,7 @@ def generate_style
 end
 
 def render_haml(template, bind=binding)
-  Haml::Engine.new(templates[:layout], {:format => :html4}).render do
+  Haml::Engine.new(templates[:layout], {:format => :html4}).render(bind) do
     Haml::Engine.new(templates[template], {:format => :html4}).render(bind)
   end
 end
