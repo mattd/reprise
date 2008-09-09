@@ -1,10 +1,12 @@
 %w(rubygems sinatra bluecloth rubypants haml sass).each { |lib| require lib }
 
-TITLE = 'Research Journal'
-AUTHOR = { :name => 'Eivind Uggedal',
-           :email => 'eu@redflavor.com',
-           :url => 'http://redflavor.com' }
-ANALYTICS = 'UA-1857692-3'
+unless Sinatra.application.reloading?
+  TITLE = 'Research Journal'
+  AUTHOR = { :name => 'Eivind Uggedal',
+             :email => 'eu@redflavor.com',
+             :url => 'http://redflavor.com' }
+  ANALYTICS = 'UA-1857692-3'
+end
 
 # Format of time objects.
 class Time
@@ -76,7 +78,7 @@ private
 
 __END__
 
-## layout
+@@ layout
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd">
 %html
@@ -95,7 +97,7 @@ __END__
     pageTracker._initData();
     pageTracker._trackPageview();
 
-## index
+@@ index
 %h1= TITLE
 %address.author.vcard
   %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
@@ -110,7 +112,7 @@ __END__
     - if i == 0
       .entry-content~ htmlify(entry[:body])
 
-## entry
+@@ entry
 %h1
   %a{ :href => '/' }= TITLE
 %address.author.vcard
@@ -123,7 +125,7 @@ __END__
     %span.entry-title= @entry[:title]
   .entry-content~ htmlify(@entry[:body])
 
-## fourofour
+@@ fourofour
 %h1
   %a{ :href => '/' }= TITLE
 %address.author.vcard
@@ -135,7 +137,7 @@ __END__
   %a{ :href => '/' } the front
   page.
 
-## style
+@@ style
 body
   :font-size 90%
   :font-family 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif
@@ -178,5 +180,5 @@ pre > code
   :border 0.15em solid #eee
   :border-left 1em solid #eee
   :display block
-  :font-family 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospaced
+  :font-family 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospaced important!
   :padding 1em 1em 1em 2em
