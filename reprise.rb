@@ -220,5 +220,5 @@ pre > code
   :border 0.15em solid #eee
   :border-left 1em solid #eee
   :display block
-  :font-family 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospaced
+  :font-family 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', "Lucida Console", "monospaced
   :padding 1em 1em 1em 2em
