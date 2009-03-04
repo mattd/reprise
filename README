@@ -6,8 +6,11 @@ Reprise - As minimal a hAtom blog as possible
        Tags: sometag anothertag lasttag
 
      The tag preamble should be followed by a blank line.
-  3. gem install BlueCloth rubypants haml ratom
-  4. ./reprise.rb
+  3. For Ruby version:
+       gem install BlueCloth rubypants haml ratom
+     For Python version:
+       easy_install Jinja2
+  4. ./reprise.rb or ./reprise.py
   5. Hook up public/ to a web server like nginx
   6. Rewrite requests from /.+/ to /.+\.html/:
 
