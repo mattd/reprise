@@ -4,11 +4,13 @@
    rubypants
    haml
    sass
+   atom
    stringio
    mailread
    time).each { |lib| require lib }
 
 TITLE = 'Redflavor Journal'
+URL = 'http://journal.redflavor.com'
 AUTHOR = { :name => 'Eivind Uggedal',
            :email => 'eu@redflavor.com',
            :url => 'http://redflavor.com' }
@@ -97,6 +99,34 @@ def render_haml(template, bind=binding)
   end
 end
 
+def generate_id(entry=nil)
+  domain = URL.sub /http:\/\/([^\/]+).*/, '\1'
+  if entry
+    "tag:#{domain},#{entry[:date]}:/#{entry[:slug]}"
+  else
+    "tag:#{domain},2009-03-04:/"
+  end
+end
+
+def generate_atom(entries)
+  Atom::Feed.new do |f|
+    f.title = TITLE
+    f.links << Atom::Link.new(:href => URL)
+    f.updated = entries.first[:date]
+    f.authors << Atom::Person.new(:name => AUTHOR[:name])
+    f.id = generate_id
+    entries.each do |entry|
+      f.entries << Atom::Entry.new do |e|
+        e.title = entry[:title]
+        e.links << Atom::Link.new(:href => "#{URL}/#{entry[:slug]}")
+        e.id = generate_id(entry)
+        e.updated = entry[:date]
+        e.content = Atom::Content::Html.new(htmlify(entry[:body]))
+      end
+    end
+  end.to_xml
+end
+
 def generate_fourofour
   fourofour = render_haml(:fourofour, binding)
   write_file('404.html', fourofour)
@@ -105,7 +135,9 @@ end
 def generate_index
   @entries = entries
   index = render_haml(:index, binding)
+  atom = generate_atom(@entries)
   write_file('index.html', index)
+  write_file('index.atom', atom)
 end
 
 def generate_tag_indexes
@@ -115,8 +147,10 @@ def generate_tag_indexes
     @entries = all_entries.select { |entry| entry[:tags].include? tag_slug }
     @active_tag = tag_slug
     tag_index = render_haml(:index, binding)
+    tag_atom = generate_atom(@entries)
     create_dir("/tags/#{tag_slug}")
     write_file("/tags/#{tag_slug}/index.html", tag_index)
+    write_file("/tags/#{tag_slug}.atom", tag_atom)
   end
 end
 
@@ -154,7 +188,10 @@ __END__
     %title= @title ? @title : TITLE
     %meta{ 'http-equiv' => 'Content-Type', :content => 'text/html;charset=utf-8' }
     %link{ :rel => 'stylesheet', :type => 'text/css', :href => '/style.css' }
-    %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => TITLE, :href => 'http://feeds.feedburner.com/redflavor' }
+    - if @active_tag
+      %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => TITLE, :href => "#{URL}/tags/#{@active_tag}.atom" }
+    - else
+      %link{ :rel => 'alternate', :type => 'application/atom+xml', :title => TITLE, :href => "#{URL}/index.atom" }
   %body
     = yield
   %script{ :type => 'text/javascript'}
