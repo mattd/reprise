@@ -16,6 +16,7 @@ AUTHOR = { :name => 'Eivind Uggedal',
            :url => 'http://redflavor.com' }
 ANALYTICS = 'UA-1857692-3'
 PUBLIC = File.join(File.dirname(__FILE__), 'public')
+TEMP = File.join(File.dirname(__FILE__), 'temp')
 ASSETS = File.join(File.dirname(__FILE__), 'assets')
 
 # Format of time objects.
@@ -75,17 +76,25 @@ def meta_from_file(file)
     :slug => slugify(title) }
 end
 
-def write_file(fname, data, root=PUBLIC)
+def write_file(fname, data, root=TEMP)
   File.open(File.join(root, fname), 'w') { |f| f.puts data }
 end
 
-def create_dir(dirname, root=PUBLIC)
+def create_dir(dirname, root=TEMP)
   FileUtils.mkdir_p File.join(root, dirname)
+end
+
+def clean_and_create_temp
+  FileUtils.rm_r TEMP if File.exists? TEMP
+  FileUtils.mkdir_p TEMP
 end
 
 def clean_public
   FileUtils.rm_r PUBLIC if File.exists? PUBLIC
-  FileUtils.mkdir_p PUBLIC
+end
+
+def distribute_temp_files
+  File.rename TEMP, PUBLIC
 end
 
 def generate_style
@@ -163,18 +172,19 @@ def generate_entries
   end
 end
 
-
 def distribute_assets
   FileUtils.cp_r "#{ASSETS}/.", PUBLIC
 end
 
 if __FILE__ == $0
-  clean_public
+  clean_and_create_temp
   generate_style
   generate_fourofour
   generate_index
   generate_tag_indexes
   generate_entries
+  clean_public
+  distribute_temp_files
   distribute_assets
 end
 
