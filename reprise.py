@@ -16,8 +16,8 @@ templates = {
     <html>
       <head>
         <title>{{ title }}</title>
-        <link rel="alternate" type="application/atom+xml" title="{ title }"
-              href="{ feed_url }"
+        <link rel="alternate" type="application/atom+xml" title="{{ title }}"
+              href="{{ feed_url }}">
       </head>
       <body>
         <h1>
