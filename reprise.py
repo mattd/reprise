@@ -1,15 +1,34 @@
 #!/usr/bin/env python
 
+import os
+
+from os.path import abspath, dirname, join
 from textwrap import dedent
 from jinja2 import DictLoader, Environment
 
-author = {
+AUTHOR = {
     'name': 'Eivind Uggedal',
     'email': 'eu@redflavor.com',
     'url': 'http://redflavor.com',
 }
 
-templates = {
+ROOT = abspath(dirname(__file__))
+DIRS = {
+    'source': join(ROOT, 'entries'),
+    'build': join(ROOT, 'build'),
+    'public': join(ROOT, 'public'),
+    'assets': join(ROOT, 'assets'),
+}
+
+def read_and_parse_entries():
+    files = sorted(os.listdir(DIRS['source']), reverse=True)
+    print files
+
+def generate_index():
+    html = env.get_template('list.html').render(author=AUTHOR)
+
+def get_templates():
+    templates = {
     'base.html': """
     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
     "http://www.w3.org/TR/html4/strict.dtd">
@@ -48,6 +67,7 @@ templates = {
       </script>
     </html>
     """,
+
     'list.html': """
     {% extends "base.html" %}
     {% block title %}
@@ -79,10 +99,10 @@ templates = {
         </div>
       {% endfor %}
     {% endblock %}
-    """,
-}
-templates = dict([(k, dedent(v).strip()) for k, v in templates.items()])
+    """,}
+    return dict([(k, dedent(v).strip()) for k, v in templates.items()])
 
 if __name__ == "__main__":
-    env = Environment(loader=DictLoader(templates))
-    print env.get_template('list.html').render(author=author)
+    env = Environment(loader=DictLoader(get_templates()))
+    all_entries = read_and_parse_entries()
+    generate_index()
