@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
-%w(rubygems bluecloth rubypants haml sass stringio time).each { |lib| require lib }
+%w(rubygems
+   bluecloth
+   rubypants
+   haml
+   sass
+   stringio
+   mailread
+   time).each { |lib| require lib }
 
 TITLE = 'Redflavor Journal'
 AUTHOR = { :name => 'Eivind Uggedal',
@@ -46,17 +53,21 @@ end
 def entries
   files = Dir[File.dirname(__FILE__) + '/entries/*'].sort.reverse
   files.collect do |file|
-    { :body => File.read(file) }.merge(meta_from_filename(file))
+    meta_from_file(file)
   end
 end
 
-def meta_from_filename(file)
+def meta_from_file(file)
+  msg = Mail.new(file)
+  tags = msg['Tags'].split
   filename = File.basename(file)
   results = filename.scan(/([\d]{4}).(\d\d).(\d\d)\.(.+)/).first
   date = Time.local(*results[0..2])
   title = results[3].gsub(/\./, ' ')
 
-  { :filename => filename,
+  { :body => msg.body.join(""),
+    :tags => tags,
+    :filename => filename,
     :date => date, 
     :title => title,
     :slug => slugify(title) }
@@ -64,6 +75,10 @@ end
 
 def write_file(fname, data, root=PUBLIC)
   File.open(File.join(root, fname), 'w') { |f| f.puts data }
+end
+
+def create_dir(dirname, root=PUBLIC)
+  FileUtils.mkdir_p File.join(root, dirname)
 end
 
 def clean_public
@@ -93,6 +108,18 @@ def generate_index
   write_file('index.html', index)
 end
 
+def generate_tag_indexes
+  all_entries = entries
+  all_tags = all_entries.collect { |entry| entry[:tags] }.flatten.uniq
+  all_tags.each do |tag_slug|
+    @entries = all_entries.select { |entry| entry[:tags].include? tag_slug }
+    @active_tag = tag_slug
+    tag_index = render_haml(:index, binding)
+    create_dir("/tags/#{tag_slug}")
+    write_file("/tags/#{tag_slug}/index.html", tag_index)
+  end
+end
+
 def generate_entries
   entries.each do |entry|
     @entry = entry
@@ -112,6 +139,7 @@ if __FILE__ == $0
   generate_style
   generate_fourofour
   generate_index
+  generate_tag_indexes
   generate_entries
   distribute_assets
 end
@@ -150,7 +178,22 @@ __END__
       %a.entry-title{ :href => "/#{entry[:slug]}", :rel => 'bookmark' }
         = entry[:title]
     - if i == 0
+      %ul.tags
+        - entry[:tags].each do |tag|
+          %li
+          - if tag == @active_tag
+            %a.active{ :href => "/tags/#{tag}", :rel => 'tag' }= tag
+          - else
+            %a{ :href => "/tags/#{tag}", :rel => 'tag' }= tag
       .entry-content~ htmlify(entry[:body])
+    - else
+      %ul.tags.inline
+        - entry[:tags].each do |tag|
+          %li
+            - if tag == @active_tag
+              %a.active{ :href => "/tags/#{tag}", :rel => 'tag' }= tag
+            - else
+              %a{ :href => "/tags/#{tag}", :rel => 'tag' }= tag
 
 ## entry
 %h1
@@ -163,6 +206,10 @@ __END__
   %abbr.updated{ :title => @entry[:date].iso8601 }= @entry[:date]
   %h2
     %span.entry-title= @entry[:title]
+  %ul.tags
+    - @entry[:tags].each do |tag|
+      %li
+        %a{ :href => "/tags/#{tag}", :rel => 'tag' }= tag
   .entry-content~ htmlify(@entry[:body])
 
 ## fourofour
@@ -184,10 +231,20 @@ body
   :line-height 1.5
   :padding 0 10em 0 10em
   :width 40em
-abbr
-  :border 0
+abbr.updated, ul.tags
   :float left
+abbr.updated
+  :border 0
   :margin 0.3em 0 0 -7em
+ul.tags
+  :list-style-type none
+  :margin 3em 0 0 -7em
+ul.tags.inline
+  :margin 0
+ul.tags.inline li
+  :display inline
+ul.tags a.active
+  :background #fcc
 ul, ol
   :padding 0
 blockquote
