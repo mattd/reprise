@@ -166,7 +166,11 @@ __END__
     pageTracker._trackPageview();
 
 ## index
-%h1= TITLE
+- if @active_tag
+  %h1
+    %a{ :href => '/' }= TITLE
+- else
+  %h1= TITLE
 %address.author.vcard
   %a.url.fn{ :href => AUTHOR[:url] }= AUTHOR[:name]
   %br
