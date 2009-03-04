@@ -240,6 +240,7 @@ ul.tags
   :list-style-type none
   :margin 3em 0 0 -7em
 ul.tags.inline
+  :float none
   :margin 0
 ul.tags.inline li
   :display inline
