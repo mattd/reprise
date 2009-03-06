@@ -3,9 +3,11 @@
 from __future__ import with_statement
 
 import os
+import re
 import email
 
-from os.path import abspath, dirname, join
+from os.path import abspath, realpath, dirname, join
+from datetime import datetime
 from textwrap import dedent
 from jinja2 import DictLoader, Environment
 
@@ -24,14 +26,29 @@ DIRS = {
 }
 
 def read_and_parse_entries():
-    files = sorted(os.listdir(DIRS['source']), reverse=True)
+    files = sorted([join(DIRS['source'], f)
+                    for f in os.listdir(DIRS['source'])], reverse=True)
+    entries = []
     for file in files:
-        with open(join(DIRS['source'], file), 'r') as open_file:
+        with open(file, 'r') as open_file:
             msg = email.message_from_file(open_file)
-            print msg
+            meta = META_REGEX.findall(file)[0]
+            entries.append({
+                'slug': slugify(meta[3]),
+                'title': meta[3].replace('.', ' '),
+                'tags': msg['Tags'].split(),
+                'date': datetime(*[int(d) for d in meta[0:3]]),
+                'content_raw': msg.get_payload(),
+                'content_html': "implement me",
+            })
+    return entries
 
 def generate_index():
     html = env.get_template('list.html').render(author=AUTHOR)
+
+def slugify(str):
+    return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '',
+                                      str.replace('.', ' ').lower()))
 
 def get_templates():
     templates = {
@@ -107,6 +124,8 @@ def get_templates():
     {% endblock %}
     """,}
     return dict([(k, dedent(v).strip()) for k, v in templates.items()])
+
+META_REGEX = re.compile(r"/(\d{4})\.(\d\d)\.(\d\d)\.(.+)")
 
 if __name__ == "__main__":
     env = Environment(loader=DictLoader(get_templates()))
