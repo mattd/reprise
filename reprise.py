@@ -13,6 +13,8 @@ from markdown import markdown
 from smartypants import smartyPants
 from jinja2 import DictLoader, Environment
 
+TITLE = 'Redflavor Journal'
+
 AUTHOR = {
     'name': 'Eivind Uggedal',
     'email': 'eu@redflavor.com',
@@ -35,17 +37,23 @@ def read_and_parse_entries():
         with open(file, 'r') as open_file:
             msg = email.message_from_file(open_file)
             meta = META_REGEX.findall(file)[0]
+            date = datetime(*[int(d) for d in meta[0:3]])
             entries.append({
                 'slug': slugify(meta[3]),
                 'title': meta[3].replace('.', ' '),
                 'tags': msg['Tags'].split(),
-                'date': datetime(*[int(d) for d in meta[0:3]]),
+                'date': {'iso8601': date.isoformat(),
+                         'display': date.strftime('%Y-%m-%d'),},
                 'content_html': smartyPants(markdown(msg.get_payload())),
             })
     return entries
 
-def generate_index():
-    html = env.get_template('list.html').render(author=AUTHOR)
+def generate_index(entries):
+    html = env.get_template('list.html').render(author=AUTHOR,
+                                                title=TITLE,
+                                                feed_url='',
+                                                analytics='',
+                                                entries=entries)
 
 def slugify(str):
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '',
@@ -104,8 +112,8 @@ def get_templates():
     {% block content %}
       {% for entry in entries %}
         <div class="hentry">
-          <abbr class="updated" title="{{ entry.date_iso8601 }}">
-            {{ entry.date_display }}
+          <abbr class="updated" title="{{ entry.date.iso8601 }}">
+            {{ entry.date.display }}
           </abbr>
           <h2>
             <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
@@ -131,4 +139,4 @@ META_REGEX = re.compile(r"/(\d{4})\.(\d\d)\.(\d\d)\.(.+)")
 if __name__ == "__main__":
     env = Environment(loader=DictLoader(get_templates()))
     all_entries = read_and_parse_entries()
-    generate_index()
+    generate_index(all_entries)
