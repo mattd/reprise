@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import with_statement
+
 import os
+import email
 
 from os.path import abspath, dirname, join
 from textwrap import dedent
@@ -22,7 +25,10 @@ DIRS = {
 
 def read_and_parse_entries():
     files = sorted(os.listdir(DIRS['source']), reverse=True)
-    print files
+    for file in files:
+        with open(join(DIRS['source'], file), 'r') as open_file:
+            msg = email.message_from_file(open_file)
+            print msg
 
 def generate_index():
     html = env.get_template('list.html').render(author=AUTHOR)
