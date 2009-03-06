@@ -9,6 +9,8 @@ import email
 from os.path import abspath, realpath, dirname, join
 from datetime import datetime
 from textwrap import dedent
+from markdown import markdown
+from smartypants import smartyPants
 from jinja2 import DictLoader, Environment
 
 AUTHOR = {
@@ -38,8 +40,7 @@ def read_and_parse_entries():
                 'title': meta[3].replace('.', ' '),
                 'tags': msg['Tags'].split(),
                 'date': datetime(*[int(d) for d in meta[0:3]]),
-                'content_raw': msg.get_payload(),
-                'content_html': "implement me",
+                'content_html': smartyPants(markdown(msg.get_payload())),
             })
     return entries
 
