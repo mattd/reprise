@@ -32,7 +32,8 @@ DIRS = {
 
 CONTEXT = {
     'author': AUTHOR,
-    'title': TITLE,
+    'body_title': TITLE,
+    'head_title': TITLE,
     'feed_url': '',
     'analytics': '',
 }
@@ -63,9 +64,18 @@ def generate_index(entries, template):
 def generate_tag_indices(entries, template):
     for tag in set(sum([e['tags'] for e in entries], [])):
         tag_entries = [e for e in entries if tag in e['tags']]
-        html = template.render(dict(CONTEXT, **{'entries': tag_entries,
-                                                'active_tag': tag,}))
+        html = template.render(
+            dict(CONTEXT, **{'entries': tag_entries,
+                             'active_tag': tag,
+                             'head_title': "%s: %s" % (TITLE, tag),}))
         write_file(join(DIRS['build'], 'tags', '%s.html' % tag), html)
+
+def generate_details(entries, template):
+    for entry in entries:
+        html = template.render(
+            dict(CONTEXT, **{'entry': entry,
+                             'head_title': "%s: %s" % (TITLE, entry['title'])}))
+        write_file(join(DIRS['build'], '%s.html' % entry['slug']), html)
 
 def generate_style(css):
     write_file(join(DIRS['build'], 'style.css'), css)
@@ -85,10 +95,10 @@ def get_templates():
     "http://www.w3.org/TR/html4/strict.dtd">
     <html>
       <head>
-        <title>{{ title }}</title>
+        <title>{{ head_title }}</title>
         <link rel='stylesheet' type='text/css' href='/style.css'>
-        <link rel="alternate" type="application/atom+xml" title="{{ title }}"
-              href="{{ feed_url }}">
+        <link rel="alternate" type="application/atom+xml"
+              title="{{ head_title }}" href="{{ feed_url }}">
       </head>
       <body>
         <h1>
@@ -124,9 +134,9 @@ def get_templates():
     {% extends "base.html" %}
     {% block title %}
       {% if active_tag %}
-        <a href="/">{{ title }}</a>
+        <a href="/">{{ body_title }}</a>
       {% else %}
-        {{ title }}
+        {{ body_title }}
       {% endif %}
     {% endblock %}
     {% block content %}
@@ -137,15 +147,31 @@ def get_templates():
     {% endblock %}
     """,
 
+    'detail.html': """
+    {% extends "base.html" %}
+    {% block title %}
+      <a href="/">{{ body_title }}</a>
+    {% endblock %}
+    {% block content %}
+      {% set display_content = True %}
+      {% set plain_title = True %}
+      {% include '_entry.html' %}
+    {% endblock %}
+    """,
+
     '_entry.html': """
     <div class="hentry">
       <abbr class="updated" title="{{ entry.date.iso8601 }}">
         {{ entry.date.display }}
       </abbr>
       <h2>
-        <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
+        {% if plain_title %}
+          {{ entry.title }}
+        {% else %}
+          <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
+        {% endif %}
       </h2>
-      <ul class="tags{% if loop.first %} floated{% endif %}">
+      <ul class="tags{% if display_content %} floated{% endif %}">
         {% for tag in entry.tags %}
           <li{% if active_tag == tag %} class="active"{% endif %}>
             <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
@@ -267,6 +293,7 @@ if __name__ == "__main__":
     generate_index(all_entries, env.get_template('list.html'))
     os.mkdir(join(DIRS['build'], 'tags'))
     generate_tag_indices(all_entries, env.get_template('list.html'))
+    generate_details(all_entries, env.get_template('detail.html'))
     generate_style(templates['style.css'])
     shutil.rmtree(DIRS['public'])
     shutil.move(DIRS['build'], DIRS['public'])
