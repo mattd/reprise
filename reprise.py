@@ -55,8 +55,14 @@ def generate_index(entries):
                                                 feed_url='',
                                                 analytics='',
                                                 entries=entries)
-    with open(join(DIRS['build'], 'index.html'), 'w') as open_file:
-        open_file.write(html)
+    write_file(join(DIRS['build'], 'index.html'), html)
+
+def generate_style(css):
+    write_file(join(DIRS['build'], 'style.css'), css)
+
+def write_file(file_name, contents):
+    with open(file_name, 'w') as open_file:
+        open_file.write(contents)
 
 def slugify(str):
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '',
@@ -70,6 +76,7 @@ def get_templates():
     <html>
       <head>
         <title>{{ title }}</title>
+        <link rel='stylesheet' type='text/css' href='/style.css'>
         <link rel="alternate" type="application/atom+xml" title="{{ title }}"
               href="{{ feed_url }}">
       </head>
@@ -134,15 +141,114 @@ def get_templates():
         </div>
       {% endfor %}
     {% endblock %}
+    """,
+    'style.css': """
+    body {
+      font-size: 1em;
+      font-family: 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif;
+      line-height: 1.5;
+      padding: 0 10em 0 10em;
+      width: 40em;
+    }
+
+    abbr.updated, ul.tags.floated {
+      float: left;
+    }
+
+    abbr.updated {
+      border: 0;
+      margin: 0.3em 0 0 -7em;
+    }
+
+    ul.tags {
+      list-style-type: none;
+    }
+
+    ul.tags.floated {
+      margin: 3em 0 0 -7em;
+    }
+
+    ul.tags li {
+      display: inline;
+    }
+
+    ul.tags.floated li {
+      display: block;
+    }
+
+    ul.tags a.active {
+      background: #fcc;
+    }
+
+    ul, ol {
+      padding: 0;
+    }
+
+    blockquote {
+      font-style: italic;
+      margin: 0;
+    }
+
+    blockquote em {
+      font-weight: bold;
+    }
+
+    a {
+      background: #ffc;
+      color: #000;
+    }
+
+    h1, address {
+      font-style: normal;
+      text-align: center;
+    }
+
+    address {
+      margin: 0 0 2em 0;
+    }
+
+    img {
+      margin: 1em 0 1em 0;
+    }
+
+    h1, h2, h3, abbr.updated, address {
+      font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    h1 a,   h2 a,   h3 a,   abbr.updated a,   address a {
+      background: transparent;
+    }
+
+    p {
+      margin-bottom: 0;
+    }
+
+    p + p {
+      margin-top: 0;
+      text-indent: 1.1em;
+    }
+
+    pre > code {
+      border: 0.15em solid #eee;
+      border-left: 1em solid #eee;
+      display: block;
+      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
+                   'Lucida Console', monospaced;
+      padding: 1em 1em 1em 2em;
+    }
     """,}
     return dict([(k, dedent(v).strip()) for k, v in templates.items()])
 
 META_REGEX = re.compile(r"/(\d{4})\.(\d\d)\.(\d\d)\.(.+)")
 
 if __name__ == "__main__":
-    env = Environment(loader=DictLoader(get_templates()))
+    templates = get_templates()
+    env = Environment(loader=DictLoader(templates))
     all_entries = read_and_parse_entries()
     os.mkdir(DIRS['build'])
     generate_index(all_entries)
+    generate_style(templates['style.css'])
     shutil.rmtree(DIRS['public'])
     shutil.move(DIRS['build'], DIRS['public'])
