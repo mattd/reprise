@@ -4,17 +4,21 @@ from __future__ import with_statement
 
 import os
 import re
+import time
 import email
 import shutil
 
 from os.path import abspath, realpath, dirname, join
-from datetime import datetime
+from datetime import datetime, timedelta
 from textwrap import dedent
 from markdown import markdown
 from smartypants import smartyPants
 from jinja2 import DictLoader, Environment
+from lxml.builder import ElementMaker
+from lxml.etree import tostring
 
 TITLE = 'Redflavor Journal'
+URL = 'http://journal.redflavor.com'
 
 AUTHOR = {
     'name': 'Eivind Uggedal',
@@ -52,23 +56,32 @@ def read_and_parse_entries():
                 'title': meta[3].replace('.', ' '),
                 'tags': msg['Tags'].split(),
                 'date': {'iso8601': date.isoformat(),
+                         'rfc3339': rfc3339(date),
                          'display': date.strftime('%Y-%m-%d'),},
                 'content_html': smartyPants(markdown(msg.get_payload())),
             })
     return entries
 
 def generate_index(entries, template):
-    html = template.render(dict(CONTEXT, **{'entries': entries,}))
+    feed_url = "%s/index.atom" % URL
+    html = template.render(dict(CONTEXT, **{'entries': entries,
+                                            'feed_url': feed_url}))
     write_file(join(DIRS['build'], 'index.html'), html)
+    atom = generate_atom(entries, feed_url)
+    write_file(join(DIRS['build'], 'index.atom'), atom)
 
 def generate_tag_indices(entries, template):
     for tag in set(sum([e['tags'] for e in entries], [])):
         tag_entries = [e for e in entries if tag in e['tags']]
+        feed_url = "%s/tags/%s.atom" % (URL, tag)
         html = template.render(
             dict(CONTEXT, **{'entries': tag_entries,
                              'active_tag': tag,
+                             'feed_url': feed_url,
                              'head_title': "%s: %s" % (TITLE, tag),}))
         write_file(join(DIRS['build'], 'tags', '%s.html' % tag), html)
+        atom = generate_atom(tag_entries, feed_url)
+        write_file(join(DIRS['build'], 'tags', '%s.atom' % tag), atom)
 
 def generate_details(entries, template):
     for entry in entries:
@@ -80,6 +93,25 @@ def generate_details(entries, template):
 def generate_style(css):
     write_file(join(DIRS['build'], 'style.css'), css)
 
+def generate_atom(entries, feed_url):
+    A = ElementMaker(namespace='http://www.w3.org/2005/Atom',
+                     nsmap={None : "http://www.w3.org/2005/Atom"})
+    entry_elements = []
+    for entry in entries:
+        entry_elements.append(A.entry(
+            A.id(atom_id(entry=entry)),
+            A.title(entry['title']),
+            A.link(href="%s/%s" % (URL, entry['slug'])),
+            A.updated(entry['date']['rfc3339']),
+            A.content(entry['content_html'], type='html'),))
+    return tostring(A.feed(A.author( A.name(AUTHOR['name']) ),
+                           A.id(atom_id()),
+                           A.title(TITLE),
+                           A.link(href=URL),
+                           A.link(href=feed_url, rel='self'),
+                           A.updated(entries[0]['date']['rfc3339']),
+                           *entry_elements), pretty_print=True)
+
 def write_file(file_name, contents):
     with open(file_name, 'w') as open_file:
         open_file.write(contents)
@@ -87,6 +119,18 @@ def write_file(file_name, contents):
 def slugify(str):
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '',
                                       str.replace('.', ' ').lower()))
+
+def atom_id(entry=None):
+    domain = re.sub(r'http://([^/]+).*', r'\1', URL)
+    if entry:
+        return "tag:%s,%s:/%s" % (domain, entry['date']['display'],
+                                  entry['slug'])
+    else:
+        return "tag:%s,2009-03-04:/" % domain
+
+def rfc3339(date):
+    offset = -time.altzone if time.daylight else -time.timezone
+    return (date + timedelta(seconds=offset)).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 def get_templates():
     templates = {
