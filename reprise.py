@@ -347,7 +347,7 @@ if __name__ == "__main__":
     templates = get_templates()
     env = Environment(loader=DictLoader(templates))
     all_entries = read_and_parse_entries()
-    os.mkdir(DIRS['build'])
+    shutil.copytree(DIRS['assets'], DIRS['build'])
     generate_index(all_entries, env.get_template('list.html'))
     os.mkdir(join(DIRS['build'], 'tags'))
     generate_tag_indices(all_entries, env.get_template('list.html'))
