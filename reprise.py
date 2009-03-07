@@ -5,6 +5,7 @@ from __future__ import with_statement
 import os
 import re
 import email
+import shutil
 
 from os.path import abspath, realpath, dirname, join
 from datetime import datetime
@@ -54,6 +55,8 @@ def generate_index(entries):
                                                 feed_url='',
                                                 analytics='',
                                                 entries=entries)
+    with open(join(DIRS['build'], 'index.html'), 'w') as open_file:
+        open_file.write(html)
 
 def slugify(str):
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '',
@@ -139,4 +142,7 @@ META_REGEX = re.compile(r"/(\d{4})\.(\d\d)\.(\d\d)\.(.+)")
 if __name__ == "__main__":
     env = Environment(loader=DictLoader(get_templates()))
     all_entries = read_and_parse_entries()
+    os.mkdir(DIRS['build'])
     generate_index(all_entries)
+    shutil.rmtree(DIRS['public'])
+    shutil.move(DIRS['build'], DIRS['public'])
