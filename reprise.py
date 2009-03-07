@@ -90,6 +90,10 @@ def generate_details(entries, template):
                              'head_title': "%s: %s" % (TITLE, entry['title'])}))
         write_file(join(DIRS['build'], '%s.html' % entry['slug']), html)
 
+def generate_404(template):
+        html = template.render(CONTEXT)
+        write_file(join(DIRS['build'], '404.html'), html)
+
 def generate_style(css):
     write_file(join(DIRS['build'], 'style.css'), css)
 
@@ -228,6 +232,16 @@ def get_templates():
     </div>
     """,
 
+    '404.html': """
+    {% extends "base.html" %}
+    {% block title %}
+      <a href="/">{{ body_title }}</a>
+    {% endblock %}
+    {% block content %}
+      <p>Resource not found. Go back to <a href="/">the front</a> page.</p>
+    {% endblock %}
+    """,
+
     'style.css': """
     body {
       font-size: 1em;
@@ -338,6 +352,7 @@ if __name__ == "__main__":
     os.mkdir(join(DIRS['build'], 'tags'))
     generate_tag_indices(all_entries, env.get_template('list.html'))
     generate_details(all_entries, env.get_template('detail.html'))
+    generate_404(env.get_template('404.html'))
     generate_style(templates['style.css'])
     shutil.rmtree(DIRS['public'])
     shutil.move(DIRS['build'], DIRS['public'])
