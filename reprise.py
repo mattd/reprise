@@ -30,6 +30,13 @@ DIRS = {
     'assets': join(ROOT, 'assets'),
 }
 
+CONTEXT = {
+    'author': AUTHOR,
+    'title': TITLE,
+    'feed_url': '',
+    'analytics': '',
+}
+
 def read_and_parse_entries():
     files = sorted([join(DIRS['source'], f)
                     for f in os.listdir(DIRS['source'])], reverse=True)
@@ -49,13 +56,16 @@ def read_and_parse_entries():
             })
     return entries
 
-def generate_index(entries):
-    html = env.get_template('list.html').render(author=AUTHOR,
-                                                title=TITLE,
-                                                feed_url='',
-                                                analytics='',
-                                                entries=entries)
+def generate_index(entries, template):
+    html = template.render(dict(CONTEXT, **{'entries': entries,}))
     write_file(join(DIRS['build'], 'index.html'), html)
+
+def generate_tag_indices(entries, template):
+    for tag in set(sum([e['tags'] for e in entries], [])):
+        tag_entries = [e for e in entries if tag in e['tags']]
+        html = template.render(dict(CONTEXT, **{'entries': tag_entries,
+                                                'active_tag': tag,}))
+        write_file(join(DIRS['build'], 'tags', '%s.html' % tag), html)
 
 def generate_style(css):
     write_file(join(DIRS['build'], 'style.css'), css)
@@ -182,7 +192,7 @@ def get_templates():
       display: block;
     }
 
-    ul.tags a.active {
+    ul.tags li.active a {
       background: #fcc;
     }
 
@@ -254,7 +264,9 @@ if __name__ == "__main__":
     env = Environment(loader=DictLoader(templates))
     all_entries = read_and_parse_entries()
     os.mkdir(DIRS['build'])
-    generate_index(all_entries)
+    generate_index(all_entries, env.get_template('list.html'))
+    os.mkdir(join(DIRS['build'], 'tags'))
+    generate_tag_indices(all_entries, env.get_template('list.html'))
     generate_style(templates['style.css'])
     shutil.rmtree(DIRS['public'])
     shutil.move(DIRS['build'], DIRS['public'])
