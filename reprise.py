@@ -121,27 +121,33 @@ def get_templates():
     {% endblock %}
     {% block content %}
       {% for entry in entries %}
-        <div class="hentry">
-          <abbr class="updated" title="{{ entry.date.iso8601 }}">
-            {{ entry.date.display }}
-          </abbr>
-          <h2>
-            <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
-          </h2>
-          <ul class="tags{% if loop.first %} floated{% endif %}">
-            {% for tag in entry.tags %}
-              <li{% if active_tag == tag %} class="active"{% endif %}>
-                <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
-              </li>
-            {% endfor %}
-          </ul>
-          {% if loop.first %}
-            <div class="entry-content">{{ entry.content_html }}</div>
-          {% endif %}
-        </div>
+        {% set display_content = loop.first %}
+        {% include '_entry.html' %}
       {% endfor %}
     {% endblock %}
     """,
+
+    '_entry.html': """
+    <div class="hentry">
+      <abbr class="updated" title="{{ entry.date.iso8601 }}">
+        {{ entry.date.display }}
+      </abbr>
+      <h2>
+        <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
+      </h2>
+      <ul class="tags{% if loop.first %} floated{% endif %}">
+        {% for tag in entry.tags %}
+          <li{% if active_tag == tag %} class="active"{% endif %}>
+            <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      {% if display_content %}
+        <div class="entry-content">{{ entry.content_html }}</div>
+      {% endif %}
+    </div>
+    """,
+
     'style.css': """
     body {
       font-size: 1em;
