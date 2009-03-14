@@ -11,7 +11,11 @@ import shutil
 from os.path import abspath, realpath, dirname, join
 from datetime import datetime, timedelta
 from textwrap import dedent
-from markdown import markdown
+from markdown import Markdown
+from markdown import TextPreprocessor
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name, TextLexer
 from smartypants import smartyPants
 from jinja2 import DictLoader, Environment
 from lxml.builder import ElementMaker
@@ -41,6 +45,32 @@ CONTEXT = {
     'feed_url': '',
     'analytics': '',
 }
+
+class CodeBlockPreprocessor(TextPreprocessor):
+    """ The Pygments Markdown Preprocessor,
+        copyright 2006-2009 by the Pygments team under BSD license. """
+
+    pattern = re.compile(
+        r'\[sourcecode:(.+?)\](.+?)\[/sourcecode\]', re.S)
+
+    formatter = HtmlFormatter(noclasses=False)
+
+    def run(self, lines):
+        def repl(m):
+            try:
+                lexer = get_lexer_by_name(m.group(1))
+            except ValueError:
+                lexer = TextLexer()
+            code = highlight(m.group(2), lexer, self.formatter)
+            code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />')
+            return '\n\n<div class="code">%s</div>\n\n' % code
+        return self.pattern.sub(
+            repl, lines)
+
+def markdown(content):
+    md = Markdown()
+    md.textPreprocessors.insert(0, CodeBlockPreprocessor())
+    return md.convert(content)
 
 def read_and_parse_entries():
     files = sorted([join(DIRS['source'], f)
@@ -97,7 +127,8 @@ def generate_404(template):
         write_file(join(DIRS['build'], '404.html'), html)
 
 def generate_style(css):
-    write_file(join(DIRS['build'], 'style.css'), css)
+    css2 = HtmlFormatter(style='trac').get_style_defs()
+    write_file(join(DIRS['build'], 'style.css'), ''.join([css, "\n\n", css2]))
 
 def generate_atom(entries, feed_url):
     A = ElementMaker(namespace='http://www.w3.org/2005/Atom',
@@ -332,12 +363,13 @@ def get_templates():
       text-indent: 1.1em;
     }
 
-    pre > code {
+    pre {
       border: 0.15em solid #eee;
       border-left: 1em solid #eee;
       display: block;
       font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
                    'Lucida Console', monospaced;
+      font-size: .75em;
       padding: 1em 1em 1em 2em;
     }
     """,}
