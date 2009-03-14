@@ -47,19 +47,21 @@ def read_and_parse_entries():
                     for f in os.listdir(DIRS['source'])], reverse=True)
     entries = []
     for file in files:
-        with open(file, 'r') as open_file:
-            msg = email.message_from_file(open_file)
-            meta = META_REGEX.findall(file)[0]
-            date = datetime(*[int(d) for d in meta[0:3]])
-            entries.append({
-                'slug': slugify(meta[3]),
-                'title': meta[3].replace('.', ' '),
-                'tags': msg['Tags'].split(),
-                'date': {'iso8601': date.isoformat(),
-                         'rfc3339': rfc3339(date),
-                         'display': date.strftime('%Y-%m-%d'),},
-                'content_html': smartyPants(markdown(msg.get_payload())),
-            })
+        match = META_REGEX.findall(file)
+        if len(match):
+            meta = match[0]
+            with open(file, 'r') as open_file:
+                msg = email.message_from_file(open_file)
+                date = datetime(*[int(d) for d in meta[0:3]])
+                entries.append({
+                    'slug': slugify(meta[3]),
+                    'title': meta[3].replace('.', ' '),
+                    'tags': msg['Tags'].split(),
+                    'date': {'iso8601': date.isoformat(),
+                             'rfc3339': rfc3339(date),
+                             'display': date.strftime('%Y-%m-%d'),},
+                    'content_html': smartyPants(markdown(msg.get_payload())),
+                })
     return entries
 
 def generate_index(entries, template):
