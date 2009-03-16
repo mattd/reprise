@@ -42,8 +42,7 @@ CONTEXT = {
     'author': AUTHOR,
     'body_title': TITLE,
     'head_title': TITLE,
-    'feed_url': '',
-    'analytics': '',
+    'analytics': 'UA-1857692-3',
 }
 
 class CodeBlockPreprocessor(TextPreprocessor):
