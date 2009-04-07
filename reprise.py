@@ -8,14 +8,12 @@ import time
 import email
 import shutil
 
+import markdown
+
 from os.path import abspath, realpath, dirname, join
 from datetime import datetime, timedelta
 from textwrap import dedent
-from markdown import Markdown
-from markdown import TextPreprocessor
-from pygments import highlight
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import get_lexer_by_name, TextLexer
 from smartypants import smartyPants
 from jinja2 import DictLoader, Environment
 from lxml.builder import ElementMaker
@@ -45,31 +43,8 @@ CONTEXT = {
     'analytics': 'UA-1857692-3',
 }
 
-class CodeBlockPreprocessor(TextPreprocessor):
-    """ The Pygments Markdown Preprocessor,
-        copyright 2006-2009 by the Pygments team under BSD license. """
-
-    pattern = re.compile(
-        r'\[sourcecode:(.+?)\](.+?)\[/sourcecode\]', re.S)
-
-    formatter = HtmlFormatter(noclasses=False)
-
-    def run(self, lines):
-        def repl(m):
-            try:
-                lexer = get_lexer_by_name(m.group(1))
-            except ValueError:
-                lexer = TextLexer()
-            code = highlight(m.group(2), lexer, self.formatter)
-            code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />')
-            return '\n\n<div class="code">%s</div>\n\n' % code
-        return self.pattern.sub(
-            repl, lines)
-
-def markdown(content):
-    md = Markdown()
-    md.textPreprocessors.insert(0, CodeBlockPreprocessor())
-    return md.convert(content)
+def _markdown(content):
+    return markdown.markdown(content, ['codehilite'])
 
 def read_and_parse_entries():
     files = sorted([join(DIRS['source'], f)
@@ -89,7 +64,7 @@ def read_and_parse_entries():
                     'date': {'iso8601': date.isoformat(),
                              'rfc3339': rfc3339(date),
                              'display': date.strftime('%Y-%m-%d'),},
-                    'content_html': smartyPants(markdown(msg.get_payload())),
+                    'content_html': smartyPants(_markdown(msg.get_payload())),
                 })
     return entries
 
