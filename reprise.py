@@ -283,7 +283,12 @@ def get_templates():
       display: block;
     }
 
-    ul.tags li.active a {
+    ul.tags a {
+      background: #ffc;
+      text-decoration: none;
+    }
+
+    ul.tags li.active a, ul.tags a:hover {
       background: #fcc;
     }
 
@@ -301,8 +306,11 @@ def get_templates():
     }
 
     a {
-      background: #ffc;
       color: #000;
+    }
+
+    a:hover {
+      text-decoration: none;
     }
 
     h1, address {
@@ -318,7 +326,7 @@ def get_templates():
       margin: 1em 0 1em 0;
     }
 
-    h1, h2, h3, abbr.updated, address {
+    h1, h2, h3, abbr.updated, address, p:first-child:first-letter {
       font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
       font-style: normal;
       font-weight: normal;
@@ -337,12 +345,17 @@ def get_templates():
       text-indent: 1.1em;
     }
 
+    p:first-child:first-letter {
+      font-size: 2.5em;
+      line-height: 1em;
+    }
+
     pre {
       border: 0.15em solid #eee;
       border-left: 1em solid #eee;
       display: block;
       font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-                   'Lucida Console', monospaced;
+                   Consolas, Monaco 'Lucida Console', monospaced;
       font-size: .75em;
       padding: 1em 1em 1em 2em;
     }
