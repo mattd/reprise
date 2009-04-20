@@ -281,10 +281,15 @@ def get_templates():
 
     ul.tags.floated li {
       display: block;
+      margin-bottom: .3em;
     }
 
     ul.tags a {
       background: #ffc;
+      border-radius:.6em;
+      -moz-border-radius:.6em;
+      -webkit-border-radius:.6em;
+      padding:.18em .36em;
       text-decoration: none;
     }
 
