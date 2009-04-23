@@ -169,6 +169,10 @@ def get_templates():
         </address>
         {% block content %}
         {% endblock %}
+        <p id="footer">
+          Powered by
+          <a href="http://github.com/uggedal/reprise">reprise.py</a>.
+        </p>
       </body>
       <script type='text/javascript'>
         var gaJsHost = (("https:" == document.location.protocol) ?
@@ -353,6 +357,18 @@ def get_templates():
     p:first-child:first-letter {
       font-size: 2.5em;
       line-height: 1em;
+    }
+
+    p#footer {
+      color: #bbb;
+      font-size: .75em;
+      margin-top: 3em;
+      text-align: center;
+      text-indent: 0;
+    }
+
+    p#footer a {
+      color: #999;
     }
 
     pre, code {
