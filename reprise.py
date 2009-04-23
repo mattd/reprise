@@ -355,13 +355,16 @@ def get_templates():
       line-height: 1em;
     }
 
+    pre, code {
+      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
+                   Consolas, Monaco 'Lucida Console', monospaced;
+      font-size: .75em;
+    }
+
     pre {
       border: 0.15em solid #eee;
       border-left: 1em solid #eee;
       display: block;
-      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-                   Consolas, Monaco 'Lucida Console', monospaced;
-      font-size: .75em;
       padding: 1em 1em 1em 2em;
     }
     """,}
