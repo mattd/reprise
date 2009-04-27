@@ -19,13 +19,13 @@ from jinja2 import DictLoader, Environment
 from lxml.builder import ElementMaker
 from lxml.etree import tostring
 
-TITLE = 'Redflavor Journal'
-URL = 'http://journal.redflavor.com'
+TITLE = 'Journal'
+URL = 'http://journal.uggedal.com'
 
 AUTHOR = {
     'name': 'Eivind Uggedal',
-    'email': 'eu@redflavor.com',
-    'url': 'http://redflavor.com',
+    'email': 'eivind@uggedal.com',
+    'url': 'http://uggedal.com',
 }
 
 ROOT = abspath(dirname(__file__))
