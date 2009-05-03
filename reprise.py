@@ -354,7 +354,7 @@ def get_templates():
       text-indent: 1.1em;
     }
 
-    p:first-child:first-letter {
+    .entry-content > p:first-child:first-letter {
       font-size: 2.5em;
       line-height: 1em;
     }
