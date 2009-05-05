@@ -26,6 +26,9 @@ AUTHOR = {
     'name': 'Eivind Uggedal',
     'email': 'eivind@uggedal.com',
     'url': 'http://uggedal.com',
+    'elsewhere': {
+        '@uggedal': 'http://twitter.com/uggedal/'
+    }
 }
 
 ROOT = abspath(dirname(__file__))
@@ -171,6 +174,11 @@ def get_templates():
         </address>
         {% block content %}
         {% endblock %}
+        <p id="elsewhere">
+        {% for service, url in author.elsewhere.items() %}
+          <a href="{{ url }}">{{ service }}</a>
+        {% endfor %}
+        </p>
         <p id="footer">
           Powered by
           <a href="http://github.com/uggedal/reprise">reprise.py</a>.
@@ -292,9 +300,9 @@ def get_templates():
 
     ul.tags a {
       background: #ffc;
-      border-radius:.6em;
-      -moz-border-radius:.6em;
-      -webkit-border-radius:.6em;
+      border-radius:.4em;
+      -moz-border-radius:.4em;
+      -webkit-border-radius:.4em;
       padding:.18em .36em;
       text-decoration: none;
     }
@@ -384,6 +392,29 @@ def get_templates():
       border-left: 1em solid #eee;
       display: block;
       padding: 1em 1em 1em 2em;
+    }
+
+    #elsewhere {
+      margin: 1em;
+      position: absolute;
+      right: 1em;
+      top: .5em;
+      z-index: 9000;
+    }
+
+    #elsewhere a {
+      background: #330033;
+      border-radius:.3em;
+      -moz-border-radius:.3em;
+      -webkit-border-radius:.3em;
+      color: #fff;
+      opacity: .9;
+      padding: .4em .6em;
+      text-decoration: none;
+    }
+
+    #elsewhere a:hover {
+      opacity: .6;
     }
     """,}
     return dict([(k, dedent(v).strip()) for k, v in templates.items()])
