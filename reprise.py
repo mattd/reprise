@@ -38,8 +38,8 @@ DIRS = {
 
 CONTEXT = {
     'author': AUTHOR,
-    'body_title': TITLE,
-    'head_title': TITLE,
+    'body_title': "%s of %s" % (TITLE, AUTHOR['name']),
+    'head_title': "%s of %s" % (TITLE, AUTHOR['name']),
     'analytics': 'UA-1857692-3',
 }
 
@@ -84,7 +84,8 @@ def generate_tag_indices(entries, template):
             dict(CONTEXT, **{'entries': tag_entries,
                              'active_tag': tag,
                              'feed_url': feed_url,
-                             'head_title': "%s: %s" % (TITLE, tag),}))
+                             'head_title': "%s: %s" % (CONTEXT['head_title'],
+                                                       tag),}))
         write_file(join(DIRS['build'], 'tags', '%s.html' % tag), html)
         atom = generate_atom(tag_entries, feed_url)
         write_file(join(DIRS['build'], 'tags', '%s.atom' % tag), atom)
@@ -93,7 +94,8 @@ def generate_details(entries, template):
     for entry in entries:
         html = template.render(
             dict(CONTEXT, **{'entry': entry,
-                             'head_title': "%s: %s" % (TITLE, entry['title'])}))
+                             'head_title': "%s: %s" % (CONTEXT['head_title'],
+                                                       entry['title'])}))
         write_file(join(DIRS['build'], '%s.html' % entry['slug']), html)
 
 def generate_404(template):
