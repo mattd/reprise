@@ -268,7 +268,7 @@ def get_templates():
       font-size: 1em;
       font-family: 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif;
       line-height: 1.5;
-      padding: 0 10em 0 10em;
+      padding: 0 3em 0 13em;
       width: 40em;
     }
 
@@ -278,7 +278,7 @@ def get_templates():
 
     abbr.updated {
       border: 0;
-      margin: 0.3em 0 0 -7em;
+      margin: 0.3em 0 0 -10em;
     }
 
     ul.tags {
@@ -286,7 +286,7 @@ def get_templates():
     }
 
     ul.tags.floated {
-      margin: 3em 0 0 -7em;
+      margin: 3em 0 0 -10em;
     }
 
     ul.tags li {
