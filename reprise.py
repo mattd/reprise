@@ -345,6 +345,29 @@ def get_templates():
       margin: 1em 0 1em 0;
     }
 
+    table.hanging {
+      background: #eee;
+      color: #666;
+      display: inline;
+      font-size: .75em;
+      float: left;
+      padding: 1em;
+      margin: 1em 1em 1em -13em;
+    }
+
+    table.hanging caption {
+      background: #eee;
+      padding: 0 1em;
+      text-align: left;
+    }
+
+    table.hanging img {
+      background: #fff;
+      border: .1em solid #ddd;
+      margin: 0;
+      padding: .5em;
+    }
+
     h1, h2, h3, abbr.updated, address, p:first-child:first-letter {
       font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
       font-style: normal;
