@@ -346,23 +346,21 @@ def get_templates():
     }
 
     table.hanging {
-      background: #eee;
       color: #666;
       display: inline;
-      font-size: .75em;
       float: left;
-      padding: 1em;
-      margin: 1em 1em 1em -13em;
+      padding: 0;
+      margin: 1em 1em 1em -10em;
     }
 
     table.hanging caption {
-      background: #eee;
+      caption-side: bottom;
+      font-size: .75em;
       padding: 0 1em;
       text-align: left;
     }
 
     table.hanging img {
-      background: #fff;
       border: .1em solid #ddd;
       margin: 0;
       padding: .5em;
@@ -385,6 +383,15 @@ def get_templates():
     p + p {
       margin-top: 0;
       text-indent: 1.1em;
+    }
+
+    table {
+      margin-top: 1em;
+    }
+
+    table th, table td {
+      padding-right: 1em;
+      text-align: left;
     }
 
     .entry-content > p:first-child:first-letter {
