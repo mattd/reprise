@@ -27,7 +27,8 @@ AUTHOR = {
     'email': 'eivind@uggedal.com',
     'url': 'http://uggedal.com',
     'elsewhere': {
-        '@uggedal': 'http://twitter.com/uggedal/'
+        '@uggedal': 'http://twitter.com/uggedal/',
+        'Was it up?': 'http://wasitup.com/',
     }
 }
 
@@ -438,6 +439,8 @@ def get_templates():
       -moz-border-radius:.3em;
       -webkit-border-radius:.3em;
       color: #fff;
+      display: block;
+      margin-bottom: .5em;
       opacity: .9;
       padding: .4em .6em;
       text-decoration: none;
