@@ -347,15 +347,15 @@ def get_templates():
     }
 
     table.hanging {
-      color: #666;
       display: inline;
       float: left;
       padding: 0;
       margin: 1em 1em 1em -10em;
     }
 
-    table.hanging caption {
+    table caption {
       caption-side: bottom;
+      color: #666;
       font-size: .75em;
       padding: 0 1em;
       text-align: left;
