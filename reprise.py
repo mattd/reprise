@@ -178,6 +178,7 @@ def get_templates():
         <p id="footer">
           Site powered by
           <a href="http://github.com/uggedal/reprise">reprise.py</a>.
+          (<a href="http://github.com/rduplain/reprise/tree/beswarm">Forked here.</a>)
         </p>
       </body>
       <script type='text/javascript'>
