@@ -19,16 +19,18 @@ from jinja2 import DictLoader, Environment
 from lxml.builder import ElementMaker
 from lxml.etree import tostring
 
-TITLE = 'Journal'
-URL = 'http://journal.uggedal.com'
+TITLE = 'beSwarm: an open spaces style meetup in Charlottesville'
+URL = 'http://beswarm.org'
 
 AUTHOR = {
-    'name': 'Eivind Uggedal',
-    'email': 'eivind@uggedal.com',
-    'url': 'http://uggedal.com',
+    'name': 'Ron DuPlain',
+    'email': 'ron.duplain@gmail.com',
+    'url': 'http://twitter.com/rduplain',
     'elsewhere': {
-        '@uggedal': 'http://twitter.com/uggedal/',
-        'Was it up?': 'http://wasitup.com/',
+        'venue': 'http://getopenspace.com/',
+        'lunch': 'http://www.ordertopia.com/shop/eppies',
+        '#beSwarm': 'http://search.twitter.com/search?q=%23beSwarm',
+        'map': 'http://maps.google.com/maps?q=455+Second Street+SE+Suite+100+Charlottesville+VA+22902',
     }
 }
 
@@ -42,9 +44,9 @@ DIRS = {
 
 CONTEXT = {
     'author': AUTHOR,
-    'analytics': 'UA-1857692-3',
     'body_title': "%s" % (TITLE),
     'head_title': "%s" % (TITLE),
+    'analytics': 'UA-13059418-1',
 }
 
 def _markdown(content):
