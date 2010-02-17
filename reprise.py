@@ -42,9 +42,9 @@ DIRS = {
 
 CONTEXT = {
     'author': AUTHOR,
-    'body_title': "%s of %s" % (TITLE, AUTHOR['name']),
-    'head_title': "%s of %s" % (TITLE, AUTHOR['name']),
     'analytics': 'UA-1857692-3',
+    'body_title': "%s" % (TITLE),
+    'head_title': "%s" % (TITLE),
 }
 
 def _markdown(content):
@@ -166,13 +166,6 @@ def get_templates():
           {% block title %}
           {% endblock %}
         </h1>
-        <address class="author vcard">
-            <a class="url fn" href="{{ author.url }}">{{ author.name }}</a>
-            <br>
-            <a class="email" href="mailto:{{ author.email }}">
-              {{ author.email }}
-            </a>
-        </address>
         {% block content %}
         {% endblock %}
         <p id="elsewhere">
@@ -181,7 +174,7 @@ def get_templates():
         {% endfor %}
         </p>
         <p id="footer">
-          Powered by
+          Site powered by
           <a href="http://github.com/uggedal/reprise">reprise.py</a>.
         </p>
       </body>
@@ -312,10 +305,6 @@ def get_templates():
       background: #fcc;
     }
 
-    ul, ol {
-      padding: 0;
-    }
-
     blockquote {
       font-style: italic;
       margin: 0;
@@ -434,7 +423,7 @@ def get_templates():
     }
 
     #elsewhere a {
-      background: #330033;
+      background: #000;
       border-radius:.3em;
       -moz-border-radius:.3em;
       -webkit-border-radius:.3em;
