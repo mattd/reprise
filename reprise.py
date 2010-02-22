@@ -31,7 +31,7 @@ AUTHOR = {
         'lunch': 'http://www.ordertopia.com/shop/eppies',
         '#beSwarm': 'http://search.twitter.com/search?q=%23beSwarm',
         'map': 'http://maps.google.com/maps?q=455+Second Street+SE+Suite+100+Charlottesville+VA+22902',
-        'sign up': 'http://www.meetup.com/beSwarm/calendar/12626170/',
+        'sign up': 'http://barcamp.org/beSwarm1',
     }
 }
 

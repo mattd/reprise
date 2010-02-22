@@ -1,0 +1,10 @@
+sessionname reprise
+caption always
+screen -t editor        0 wrap $EDITOR .
+screen -t git           1 wrap git status
+screen -t make          2 wrap echo use build.sh
+select 1
+select 0
+
+source $HOME/.screenrc
+caption always
