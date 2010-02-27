@@ -208,7 +208,7 @@ def get_templates():
     {% endblock %}
     {% block content %}
       {% for entry in entries %}
-        {% set display_content = loop.first %}
+        {% set display_content = loop %}
         {% include '_entry.html' %}
       {% endfor %}
     {% endblock %}
