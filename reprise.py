@@ -397,7 +397,7 @@ def get_templates():
 
     pre, code {
       font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-                   Consolas, Monaco 'Lucida Console', monospaced;
+                   Consolas, Monaco, 'Lucida Console', monospaced;
       font-size: .75em;
     }
 
