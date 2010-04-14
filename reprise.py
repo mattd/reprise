@@ -239,13 +239,15 @@ def get_templates():
           <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
         {% endif %}
       </h2>
-      <ul class="tags{% if display_content %} floated{% endif %}">
-        {% for tag in entry.tags %}
-          <li{% if active_tag == tag %} class="active"{% endif %}>
-            <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
-          </li>
-        {% endfor %}
-      </ul>
+      {% if display_content %}
+        <ul class="tags">
+          {% for tag in entry.tags %}
+            <li{% if active_tag == tag %} class="active"{% endif %}>
+              <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
       {% if display_content %}
         <div class="entry-content">{{ entry.content_html }}</div>
       {% endif %}
@@ -272,7 +274,7 @@ def get_templates():
       width: 40em;
     }
 
-    abbr.updated, ul.tags.floated {
+    abbr.updated, ul.tags {
       float: left;
     }
 
@@ -282,25 +284,14 @@ def get_templates():
     }
 
     ul.tags {
+      font-size: .8em;
       list-style-type: none;
-    }
-
-    ul.tags.floated {
       margin: 3em 0 0 -10em;
     }
 
     ul.tags li {
-      display: inline;
-      font-size: .8em;
-    }
-
-    ul.tags.floated li {
       display: block;
       margin-bottom: .3em;
-    }
-
-    ul.tags a {
-      text-decoration: none;
     }
 
     ul.tags li.active a, ul.tags a:hover {
@@ -327,7 +318,7 @@ def get_templates():
     a:hover {
     }
 
-    h1 a, h2 a, h3 a {
+    h1 a, h2 a, h3 a ul.tags a {
       text-decoration: none;
     }
 
