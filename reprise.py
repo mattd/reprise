@@ -266,9 +266,10 @@ def get_templates():
 
     'style.css': """
     body {
+      color: #444;
       font-size: 1em;
       font-family: 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif;
-      line-height: 1.5;
+      line-height: 1.6;
       padding: 0 3em 0 13em;
       width: 40em;
     }
@@ -378,12 +379,7 @@ def get_templates():
     }
 
     p {
-      margin-bottom: 0;
-    }
-
-    p + p {
-      margin-top: 0;
-      text-indent: 1.1em;
+      margin-bottom: 1em;
     }
 
     table {
