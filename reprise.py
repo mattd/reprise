@@ -318,7 +318,7 @@ def get_templates():
     a:hover {
     }
 
-    h1 a, h2 a, h3 a ul.tags a {
+    h1 a, h2 a, h3 a, ul.tags a {
       text-decoration: none;
     }
 
