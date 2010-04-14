@@ -21,6 +21,7 @@ from lxml.etree import tostring
 
 TITLE = 'Journal'
 URL = 'http://journal.uggedal.com'
+STYLESHEET = 'style2.css'
 
 AUTHOR = {
     'name': 'Eivind Uggedal',
@@ -45,6 +46,7 @@ CONTEXT = {
     'body_title': "%s of %s" % (TITLE, AUTHOR['name']),
     'head_title': "%s of %s" % (TITLE, AUTHOR['name']),
     'analytics': 'UA-1857692-3',
+    'stylesheet': STYLESHEET,
 }
 
 def _markdown(content):
@@ -108,7 +110,7 @@ def generate_404(template):
 
 def generate_style(css):
     css2 = HtmlFormatter(style='trac').get_style_defs()
-    write_file(join(DIRS['build'], 'style.css'), ''.join([css, "\n\n", css2]))
+    write_file(join(DIRS['build'], STYLESHEET), ''.join([css, "\n\n", css2]))
 
 def generate_atom(entries, feed_url):
     A = ElementMaker(namespace='http://www.w3.org/2005/Atom',
@@ -157,7 +159,7 @@ def get_templates():
     <html>
       <head>
         <title>{{ head_title }}</title>
-        <link rel='stylesheet' type='text/css' href='/style.css'>
+        <link rel='stylesheet' type='text/css' href='/{{ stylesheet }}'>
         <link rel="alternate" type="application/atom+xml"
               title="{{ head_title }}" href="{{ feed_url }}">
       </head>
@@ -264,7 +266,7 @@ def get_templates():
     {% endblock %}
     """,
 
-    'style.css': """
+    STYLESHEET: """
     body {
       color: #444;
       font-size: 1em;
@@ -274,28 +276,17 @@ def get_templates():
       width: 40em;
     }
 
-    abbr.updated, ul.tags {
-      float: left;
+    @font-face {
+      font-family: "Sorts Mill Goudy";
+      src: url("/OFLGoudyStM.otf");
     }
 
-    abbr.updated {
-      border: 0;
-      margin: 0.3em 0 0 -10em;
+    a {
+      color: #444;
     }
 
-    ul.tags {
-      list-style-type: none;
-      margin: 3em 0 0 -10em;
-    }
-
-    ul.tags li {
-      display: block;
-      font-size: .8em;
-      margin-bottom: .3em;
-    }
-
-    ul.tags li.active a, ul.tags a:hover {
-      color: #c00;
+    p {
+      margin-bottom: 1em;
     }
 
     ul, ol {
@@ -307,20 +298,114 @@ def get_templates():
       margin: 0;
     }
 
-    blockquote em {
-      font-weight: bold;
+      blockquote em {
+        font-weight: bold;
+      }
+
+    pre, code {
+      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
+                   Consolas, Monaco, 'Lucida Console', monospaced;
+      font-size: .75em;
     }
 
-    a {
-      color: #444;
+      pre {
+        border: 0.15em solid #eee;
+        border-left: 1em solid #eee;
+        display: block;
+        padding: 1em 1em 1em 2em;
+      }
+
+    h1 {
+      font-size: 2.5em;
+      margin: 1.5em 0 1em 0;
     }
 
-    a:hover {
+    h2 {
+      font-size: 3em;
     }
+
+    h3 {
+      font-size: 2em;
+    }
+
+    img {
+      margin: 1em 0 1em 0;
+    }
+
+    table {
+      margin-top: 1em;
+    }
+
+      table th, table td {
+        padding-right: 1em;
+        text-align: left;
+      }
+
+      table.hanging {
+        display: inline;
+        float: left;
+        padding: 0;
+        margin: 1em 1em 1em -10em;
+      }
+
+        table caption {
+          caption-side: bottom;
+          color: #666;
+          font-size: .75em;
+          padding: 0 1em;
+          text-align: left;
+        }
+
+          table.hanging img {
+            border: .1em solid #ddd;
+            margin: 0;
+            padding: .5em;
+          }
 
     h1 a, h2 a, h3 a, ul.tags a {
       text-decoration: none;
     }
+
+    h1, h1 a, h2, h2 a, h3 {
+      color: #222;
+    }
+
+      h1 a:hover, h2 a:hover {
+        color: #c00;
+      }
+
+    h1, h2, h3, abbr.updated {
+      font-family: "Sorts Mill Goudy", Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    abbr.updated, ul.tags {
+      float: left;
+    }
+
+      abbr.updated {
+        border: 0;
+        color: #c00;
+        font-size: 1.6em;
+        line-height: 3.25em;
+        margin: 0 0 0 -6.25em;
+      }
+
+    ul.tags {
+      list-style-type: none;
+      margin: 0 0 0 -10em;
+    }
+
+      ul.tags li {
+        display: block;
+        font-size: .8em;
+        margin-bottom: .3em;
+      }
+
+        ul.tags li.active a, ul.tags a:hover {
+          color: #c00;
+        }
 
     .entry-content a {
       color: #c00;
@@ -328,55 +413,6 @@ def get_templates():
 
     .entry-content a:hover {
       color: #000;
-    }
-
-    h1 {
-      margin: 2em 0 1em 0;
-      text-align: center;
-    }
-
-    img {
-      margin: 1em 0 1em 0;
-    }
-
-    table.hanging {
-      display: inline;
-      float: left;
-      padding: 0;
-      margin: 1em 1em 1em -10em;
-    }
-
-    table caption {
-      caption-side: bottom;
-      color: #666;
-      font-size: .75em;
-      padding: 0 1em;
-      text-align: left;
-    }
-
-    table.hanging img {
-      border: .1em solid #ddd;
-      margin: 0;
-      padding: .5em;
-    }
-
-    h1, h2, h3, abbr.updated {
-      font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
-      font-style: normal;
-      font-weight: normal;
-    }
-
-    p {
-      margin-bottom: 1em;
-    }
-
-    table {
-      margin-top: 1em;
-    }
-
-    table th, table td {
-      padding-right: 1em;
-      text-align: left;
     }
 
     p#footer {
@@ -389,19 +425,6 @@ def get_templates():
 
     p#footer a {
       color: #999;
-    }
-
-    pre, code {
-      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-                   Consolas, Monaco, 'Lucida Console', monospaced;
-      font-size: .75em;
-    }
-
-    pre {
-      border: 0.15em solid #eee;
-      border-left: 1em solid #eee;
-      display: block;
-      padding: 1em 1em 1em 2em;
     }
 
     #elsewhere {
@@ -443,6 +466,6 @@ if __name__ == "__main__":
     generate_tag_indices(all_entries, env.get_template('list.html'))
     generate_details(all_entries, env.get_template('detail.html'))
     generate_404(env.get_template('404.html'))
-    generate_style(templates['style.css'])
+    generate_style(templates[STYLESHEET])
     shutil.rmtree(DIRS['public'])
     shutil.move(DIRS['build'], DIRS['public'])
