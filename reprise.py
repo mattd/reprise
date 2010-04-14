@@ -293,6 +293,7 @@ def get_templates():
 
     ul.tags li {
       display: inline;
+      font-size: .8em;
     }
 
     ul.tags.floated li {
@@ -301,16 +302,11 @@ def get_templates():
     }
 
     ul.tags a {
-      background: #ffc;
-      border-radius:.4em;
-      -moz-border-radius:.4em;
-      -webkit-border-radius:.4em;
-      padding:.18em .36em;
       text-decoration: none;
     }
 
     ul.tags li.active a, ul.tags a:hover {
-      background: #fcc;
+      color: #c00;
     }
 
     ul, ol {
@@ -327,11 +323,22 @@ def get_templates():
     }
 
     a {
-      color: #000;
+      color: #444;
     }
 
     a:hover {
+    }
+
+    h1 a, h2 a, h3 a {
       text-decoration: none;
+    }
+
+    .entry-content a {
+      color: #c00;
+    }
+
+    .entry-content a:hover {
+      color: #000;
     }
 
     h1, address {
@@ -430,7 +437,7 @@ def get_templates():
     }
 
     #elsewhere a {
-      background: #330033;
+      background: #c00;
       border-radius:.3em;
       -moz-border-radius:.3em;
       -webkit-border-radius:.3em;
