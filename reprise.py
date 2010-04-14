@@ -166,13 +166,6 @@ def get_templates():
           {% block title %}
           {% endblock %}
         </h1>
-        <address class="author vcard">
-            <a class="url fn" href="{{ author.url }}">{{ author.name }}</a>
-            <br>
-            <a class="email" href="mailto:{{ author.email }}">
-              {{ author.email }}
-            </a>
-        </address>
         {% block content %}
         {% endblock %}
         <p id="elsewhere">
@@ -181,6 +174,11 @@ def get_templates():
         {% endfor %}
         </p>
         <p id="footer">
+          <address class="author vcard">
+            Written by
+            <a class="url fn" href="{{ author.url }}">{{ author.name }}</a>
+            &lt;<a class="email" href="mailto:{{ author.email }}">{{ author.email }}</a>&gt;.
+          </address>
           Powered by
           <a href="http://github.com/uggedal/reprise">reprise.py</a>.
         </p>
@@ -341,13 +339,14 @@ def get_templates():
       color: #000;
     }
 
-    h1, address {
-      font-style: normal;
+    h1 {
       text-align: center;
     }
 
     address {
-      margin: 0 0 2em 0;
+      font-size: .8em;
+      font-style: normal;
+      display: inline;
     }
 
     img {
@@ -375,14 +374,10 @@ def get_templates():
       padding: .5em;
     }
 
-    h1, h2, h3, abbr.updated, address, p:first-child:first-letter {
+    h1, h2, h3, abbr.updated, p:first-child:first-letter {
       font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
       font-style: normal;
       font-weight: normal;
-    }
-
-    h1 a,   h2 a,   h3 a,   abbr.updated a,   address a {
-      background: transparent;
     }
 
     p {
