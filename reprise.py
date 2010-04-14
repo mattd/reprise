@@ -360,7 +360,7 @@ def get_templates():
       padding: .5em;
     }
 
-    h1, h2, h3, abbr.updated, p:first-child:first-letter {
+    h1, h2, h3, abbr.updated {
       font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
       font-style: normal;
       font-weight: normal;
@@ -377,11 +377,6 @@ def get_templates():
     table th, table td {
       padding-right: 1em;
       text-align: left;
-    }
-
-    .entry-content > p:first-child:first-letter {
-      font-size: 2.5em;
-      line-height: 1em;
     }
 
     p#footer {
