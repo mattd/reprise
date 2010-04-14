@@ -174,11 +174,11 @@ def get_templates():
         {% endfor %}
         </p>
         <p id="footer">
-          <address class="author vcard">
+          <span class="author vcard">
             Written by
             <a class="url fn" href="{{ author.url }}">{{ author.name }}</a>
             &lt;<a class="email" href="mailto:{{ author.email }}">{{ author.email }}</a>&gt;.
-          </address>
+          </span>
           Powered by
           <a href="http://github.com/uggedal/reprise">reprise.py</a>.
         </p>
@@ -332,12 +332,6 @@ def get_templates():
 
     h1 {
       text-align: center;
-    }
-
-    address {
-      font-size: .8em;
-      font-style: normal;
-      display: inline;
     }
 
     img {
