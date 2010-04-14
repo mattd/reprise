@@ -331,6 +331,7 @@ def get_templates():
     }
 
     h1 {
+      margin: 2em 0 1em 0;
       text-align: center;
     }
 
