@@ -284,13 +284,13 @@ def get_templates():
     }
 
     ul.tags {
-      font-size: .8em;
       list-style-type: none;
       margin: 3em 0 0 -10em;
     }
 
     ul.tags li {
       display: block;
+      font-size: .8em;
       margin-bottom: .3em;
     }
 
