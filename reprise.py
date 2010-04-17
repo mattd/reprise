@@ -50,7 +50,7 @@ CONTEXT = {
 }
 
 def _markdown(content):
-    return markdown.markdown(content, ['codehilite'])
+    return markdown.markdown(content, ['codehilite', 'def_list'])
 
 def read_and_parse_entries():
     files = sorted([join(DIRS['source'], f)
