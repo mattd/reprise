@@ -19,17 +19,16 @@ from jinja2 import DictLoader, Environment
 from lxml.builder import ElementMaker
 from lxml.etree import tostring
 
-TITLE = 'Journal'
-URL = 'http://journal.uggedal.com'
-STYLESHEET = 'style2.css'
+TITLE = 'bytexbyte'
+URL = 'http://bytexbyte.com'
+STYLESHEET = 'styles.css'
 
 AUTHOR = {
-    'name': 'Eivind Uggedal',
-    'email': 'eivind@uggedal.com',
-    'url': 'http://uggedal.com',
+    'name': 'Matt Dawson',
+    'url': 'http://bytexbyte.com',
     'elsewhere': {
-        '@uggedal': 'http://twitter.com/uggedal/',
-        'Was it up?': 'http://wasitup.com/',
+        '@mattdawson': 'http://twitter.com/mattdawson/',
+        'Dawsoning': 'http://dawsoning.com/',
     }
 }
 
@@ -43,9 +42,6 @@ DIRS = {
 
 CONTEXT = {
     'author': AUTHOR,
-    'body_title': "%s of %s" % (TITLE, AUTHOR['name']),
-    'head_title': "%s of %s" % (TITLE, AUTHOR['name']),
-    'analytics': 'UA-1857692-3',
     'stylesheet': STYLESHEET,
 }
 
@@ -154,66 +150,63 @@ def rfc3339(date):
 def get_templates():
     templates = {
     'base.html': """
-    <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-    "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
+    <!DOCTYPE html>
+    <html lang="en">
       <head>
         <title>{{ head_title }}</title>
-        <link rel='stylesheet' type='text/css' href='/{{ stylesheet }}'>
+        <meta charset="UTF-8">
+        <link rel=r"stylesheet" type="text/css" href="/{{ stylesheet }}">
         <link rel="alternate" type="application/atom+xml"
               title="{{ head_title }}" href="{{ feed_url }}">
+        <link rel="openid.server" href="http://www.myopenid.com/server" />
+        <link rel="openid.delegate" href="http://mattdawson.myopenid.com/" />
       </head>
       <body>
-        <h1>
-          {% block title %}
-          {% endblock %}
-        </h1>
+        <a href="http://github.com/mattd"><img class="ribbon"
+        src="http://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+        alt="Fork me on GitHub"></a>
+        <section id="site-info">
+          <header>
+            <h2>busy building</h2>
+            <h1><a href="/"byte<span>x</span>byte</a></h1>
+          </header>
+          <article>
+            <p>is the programming journal of <a
+            href="http://www.google.com/profiles/matthewtdawson">{{ author.name }}
+            </a>, a professional web developer and tech junkie from
+            Charlottesville, VA USA.</p>
+            <p>Wanna get in touch? Email matt at this domain dot com.  I'll be 
+            pleasant. Promise.</p>
+            <p>
+            {% for service, url in author.elsewhere.items() %}
+              <a href="{{ url }}">{{ service }}</a>
+              {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </p>
+          </article>
+        </section><!--/#site-info-->
         {% block content %}
         {% endblock %}
-        <p id="elsewhere">
-        {% for service, url in author.elsewhere.items() %}
-          <a href="{{ url }}">{{ service }}</a>
-        {% endfor %}
-        </p>
-        <p id="footer">
-          <span class="author vcard">
-            Written by
-            <a class="url fn" href="{{ author.url }}">{{ author.name }}</a>
-            &lt;<a class="email" href="mailto:{{ author.email }}">{{ author.email }}</a>&gt;.
-          </span>
-          Powered by
-          <a href="http://github.com/uggedal/reprise">reprise.py</a>.
-        </p>
+        <footer>
+          <nav>
+            <strong>feeds:</strong> <a href="{{ feed_url }}">atom</a>
+          </nav>
+          <p>&copy; {{ author.name }}. <a href="http://github.com/uggdeal/reprise/">
+          Reprise</a> powered. Hosted in <a href="http://rackspacecloud.com">
+          the cloud</a>.</p>
+        </footer>
       </body>
-      <script type='text/javascript'>
-        var gaJsHost = (("https:" == document.location.protocol) ?
-                       "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost +
-                                "google-analytics.com/ga.js' type='text/" +
-                                "javascript'%3E%3C/script%3E"));
-      </script>
-      <script type='text/javascript'>
-        var pageTracker = _gat._getTracker("{{ analytics }}");
-        pageTracker._initData();
-        pageTracker._trackPageview();
-      </script>
     </html>
     """,
 
     'list.html': """
     {% extends "base.html" %}
-    {% block title %}
-      {% if active_tag %}
-        <a href="/">{{ body_title }}</a>
-      {% else %}
-        {{ body_title }}
-      {% endif %}
-    {% endblock %}
     {% block content %}
+      <section id="previews">
       {% for entry in entries %}
-        {% set display_content = loop.first %}
-        {% include '_entry.html' %}
+        {% include '_preview.html' %}
       {% endfor %}
+      </section><!--/#previews-->
     {% endblock %}
     """,
 
@@ -227,6 +220,9 @@ def get_templates():
       {% set plain_title = True %}
       {% include '_entry.html' %}
     {% endblock %}
+    """,
+
+    '_preview.html': """
     """,
 
     '_entry.html': """
