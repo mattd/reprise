@@ -1,0 +1,49 @@
+Tags: couchdb python
+
+<em><strong>Note:</strong> This post is adapted from an email I sent to [cville@librelist.com](mailto:cville@librelist.com). Are you in Charlottesville? You should join!</em>
+
+[CouchDB](http://couchdb.apache.org/) first caught my attention about 10 months ago. I've done a lot of learning this year, and at first introduction, I wasn't at a place where I could grok how cool it is. This last weekend, I felt ready to dive in.
+
+Since I'm most interested in CouchDB's replication abilities, that's what I've been focusing on. I've only barely touched on views and view servers or actually working with the data.  
+
+If you don't know much about CouchDB, O'Reilly's started the official book. The [online version](http://books.couchdb.org/relax/) is rife with typos and is very unclear at points, but it's better than nothing. 
+
+### The Game
+
+What I wanted to see was how easy it would be to set up a public database (in my case, a virtual machine at [Rackspace](http://rackspacecloud.com)) that syncs automatically with an arbitrary number of local machines. The answer: really stoopid easy.
+
+### The Cloud Server and Desktop
+
+I'm using the [couchdb-python](http://code.google.com/p/couchdb-python/) library to interact with servers and databases. I have one couchdb server running on my desktop, one on a cloud server at Rackspace, and one on my laptop. Here's the code I ran from a terminal on my desktop to create databases and start up replication between the desktop and the cloud server:
+
+	>>> import couchdb
+	>>> import uuid
+	>>> s = couchdb.Server() # Server defaults to localhost, so this is my desktop
+	>>> s2 = couchdb.Server('http://cloudserver.dev:5984')
+	>>> db = s.create('addressbook') # create a db on the local server
+	>>> db[uuid.uuid4().hex] = {'first_name': 'Matt', 'last_name': 'Dawson'} # create the first document on the local server
+	>>> s2.create('addressbook-public') # create a db on the remote server
+	>>> s.replicate('addressbook', 'http://cloudserver.dev:5984/addressbook-public', continuous=True)
+	>>> s.replicate('http://cloudserver.dev:5984/addressbook-public', 'addressbook', continuous=True)
+
+By default in CouchDB, replicate is a one-off operation. It just says "move data from this database to that one." Adding the "continuous" flag means that a save on the local server automatically triggers an update to the remote server. We run two replicate calls with the target and source switched to make the updates bi-directional. That is, I can now make an update on either the cloud server or on the local machine, and either way, both machines get updated.
+
+### The Laptop
+
+Now I open a terminal on my laptop, create a database, and do another bi-directional sync to the cloud server.
+
+	>>> import couchdb
+	>>> s = couchdb.Server()
+	>>> db = s.create('addressbook')
+	>>> s.replicate('addressbook', 'http://cloudserver.dev:5984/addressbook-public', continuous=True)
+	>>> s.replicate('http://cloudserver.dev:5984/addressbook-public', 'addressbook', continuous=True)
+
+### Cool, right?
+
+The absolute coolest part about this is that if I make an update to the database on my desktop, it automatically propagates to my laptop.  Even *cooler* is that the update happens even if my laptop's been asleep. As soon as my laptop wakes and I go to check that local version of the db, CouchDB automatically phones home before showing me the results.
+
+There is one caveat: CouchDB currently does not track continuous replications beyond server restarts, so if you want to use this kind of setup in production, you'll have to figure out how to recreate those replications either in your application code or on your servers.
+
+It's worth noting that CouchDB is written on a RESTful API, so this whole process could have been done with curl. If you're not a fan of Python, there's likely a library for your language of choice.  
+
+If you're building an app with Python and CouchDB, I'd love to hear about it via email or on librelist.

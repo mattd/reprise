@@ -1,0 +1,22 @@
+Tags: gnu screen vi
+
+My favorite program of 2009 wasn't made this year. In fact, it wasn't even made this *decade*. Or the last one. But it feels more fresh than any program I installed this year.
+
+The program is GNU Screen, and it is *amazing*. Screen's [Wikipedia entry](http://en.wikipedia.org/wiki/GNU_Screen) does an admirable job of summing up what it does.
+
+> GNU Screen is a free terminal multiplexer that allows a user to access multiple separate terminal sessions inside a single terminal window or remote terminal session. It is useful for dealing with multiple programs from the command line, and for separating programs from the shell that started the program.
+
+Said another way, Screen is like a terminal inside your terminal. Why the nesting? Screen's killer feature: a Screen session can be detached from a terminal, left running, and reconnected at any terminal at a later date. 
+
+There are a hundred useful scenarios for this kind of functionality, spotty wireless connections being one. On a number of occasions this year, I've been working from a <abbr title="Secure Shell">ssh</abbr> connection, lost signal, and had the ssh session unexpectedly terminate. With screen, I just reopen the ssh session, type `screen -r`, and I'm back right where I left off. (If this is starting to sound interesting, you should really take a minute and try it out. Screen is included with most *nix operating systems, including OSX. Download [my .screenrc](http://github.com/mattd/config/raw/master/.screenrc) (with a hat tip to [Ron](http://github.com/rduplain)), read [a better introduction](http://www.kuro5hin.org/story/2004/3/9/16838/14935), and get started.)
+
+###Here's where it gets interesting.
+
+The best part is that Screen, being an abstract, free-floating terminal, is filled with all sorts of cool little tools that leverage the benefits inherent in this setup. For one, you can target any running screen session and window from pretty much any scriptable tool. That's including my favorite text editor, vim.
+
+Jonathan Palardy has come up with my as-of-yet favorite Screen tool, a vim plugin called [slime.vim](http://technotales.wordpress.com/2007/10/03/like-slime-for-vim/). The concept is simple: yank any arbitrary text into a vim buffer and send it to any screen window with a simple key combination. That's it.
+
+Why is this cool? If you commonly have both a <abbr title="Read Evaluat Print Loop">REPL</abbr>-type interpreter open in one terminal and vim in another, slime.vim will let you send the contents of your buffer directly to your REPL. No more copying and pasting! Was your code borked? Edit in an environment you're comfortable in, with all the cushy luxuries inherent in a modal editor, then send it back to the interpreter to try again.
+
+Now I won't feel quite as silly calling vim an [IDE](Integrated Development Environment) anymore. And since slime.vim allows me to send text from vim to *any* command line program, I'm on the lookout for other places this might come in handy.
+

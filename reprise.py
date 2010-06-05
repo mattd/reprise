@@ -27,8 +27,12 @@ AUTHOR = {
     'name': 'Matt Dawson',
     'url': 'http://bytexbyte.com',
     'elsewhere': {
-        '@mattdawson': 'http://twitter.com/mattdawson/',
         'Dawsoning': 'http://dawsoning.com/',
+        'delicious': 'http://delicious.com/matthewtdawson/',
+        'Facebook': 'http://facebook.com/mattdawson/',
+        'flickr': 'http://flickr.com/photos/matthewtdawson/',
+        'The Nested Float': 'http://thenestedfloat.com/',
+        'twitter': 'http://twitter.com/mattdawson/',
     }
 }
 
@@ -43,6 +47,7 @@ DIRS = {
 CONTEXT = {
     'author': AUTHOR,
     'stylesheet': STYLESHEET,
+    'head_title': "%s" % TITLE,
 }
 
 def _markdown(content):
@@ -59,14 +64,16 @@ def read_and_parse_entries():
             with open(file, 'r') as open_file:
                 msg = email.message_from_file(open_file)
                 date = datetime(*[int(d) for d in meta[0:3]])
+                content = msg.get_payload()
                 entries.append({
                     'slug': slugify(meta[3]),
                     'title': meta[3].replace('.', ' '),
                     'tags': msg['Tags'].split(),
                     'date': {'iso8601': date.isoformat(),
                              'rfc3339': rfc3339(date),
-                             'display': date.strftime('%Y-%m-%d'),},
-                    'content_html': smartyPants(_markdown(msg.get_payload())),
+                             'display': date.strftime('%B %d, %Y'),},
+                    'excerpt_html': smartyPants(_markdown(content[:150] + '...')),
+                    'content_html': smartyPants(_markdown(content)),
                 })
     return entries
 
@@ -155,7 +162,7 @@ def get_templates():
       <head>
         <title>{{ head_title }}</title>
         <meta charset="UTF-8">
-        <link rel=r"stylesheet" type="text/css" href="/{{ stylesheet }}">
+        <link rel="stylesheet" type="text/css" href="/{{ stylesheet }}">
         <link rel="alternate" type="application/atom+xml"
               title="{{ head_title }}" href="{{ feed_url }}">
         <link rel="openid.server" href="http://www.myopenid.com/server" />
@@ -172,15 +179,15 @@ def get_templates():
           </header>
           <article>
             <p>is the programming journal of <a
-            href="http://www.google.com/profiles/matthewtdawson">{{ author.name }}
-            </a>, a professional web developer and tech junkie from
-            Charlottesville, VA USA.</p>
+            href="http://www.google.com/profiles/matthewtdawson">
+            {{ author.name }}</a>, a professional web developer and tech junkie 
+            from Charlottesville, VA USA.</p>
             <p>Wanna get in touch? Email matt at this domain dot com.  I'll be 
             pleasant. Promise.</p>
-            <p>
+            <p><strong>Elsewhere:</strong>
             {% for service, url in author.elsewhere.items() %}
-              <a href="{{ url }}">{{ service }}</a>
-              {% if not loop.last %}, {% endif %}
+              <a href="{{ url }}">{{ service }}</a>{% if not loop.last %},
+              {% endif %}
             {% endfor %}
             </p>
           </article>
@@ -230,7 +237,13 @@ def get_templates():
         </a></h2>
       </header>
       <section class="body">
-        {{ entry.content_html }}
+        {{ entry.excerpt_html|striptags }}
+        <p>
+          {% for tag in entry.tags %}
+            <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
+            {% endif %}
+          {% endfor %}
+        </p>
       </section><!--/.body-->
     </article>
     """,
@@ -246,13 +259,13 @@ def get_templates():
         </a></h2>
       </header>
       <section class="body">
+        {{ entry.content_html }}
         <p>
           {% for tag in entry.tags %}
-            <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>
-            {% if not loop.last %}, {% endif %}
+            <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
+            {% endif %}
           {% endfor %}
         </p>
-        {{ entry.content_html }}
       </section><!--/.body-->
     </article>
     """,

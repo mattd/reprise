@@ -1,0 +1,17 @@
+Tags: git
+
+To dyed-in-the-wool git heads, this trick may be old hat. But one of my rules is if it takes me more than fifteen minutes of googling to find an answer, it's probably worth posting somewhere.
+
+In setting up [a system for deploying this blog via git](http://blogofile.com/documentation/vcs_integration.html#automatic-deployment-in-git), I was left wanting for one thing: I liked the idea of keeping a mirror of the repo from the production server on [GitHub](http://github.com). Initially, I played around with the idea of hosting the actual static files for the site as [GitHub Pages](http://pages.github.com/), but after I found [this simple tutorial](http://blog.drewolson.org/2008/05/remote-git-repos-on-ubuntu-right-way.html) for setting up git remotes in Ubuntu, I was kind of attached to that idea of self hosting. Now I wanted to run one `push` command and have both the production server and GitHub backup get the change.
+
+### From Linus Himself
+
+As it turned out, the answer [came from Linus Torvalds](http://marc.info/?l=git&m=116231242118202&w=2), Linux's <abbr title="Benevolent Dictator For Life">BDFL</abbr>. All you need to do is create a new remote (following Linus' example, I'm calling mine "all") on your local cloned copy that includes urls for both remote repositories. Your .git/config should now include something like this:
+
+    [remote "all"]
+        url = git@github.com:mattd/bytexbyte.git
+        url = git@bytexbyte.com:bytexbyte.git
+
+Now just run `git push all master` to send changes to both of your remotes.
+
+One thing to note: pulling from multiple locations isn't as simple of a process, so you'll want to make sure you leave your `origin` intact. Pulling or fetching from `all` simply won't work.
