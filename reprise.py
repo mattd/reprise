@@ -168,7 +168,7 @@ def get_templates():
         <section id="site-info">
           <header>
             <h2>busy building</h2>
-            <h1><a href="/"byte<span>x</span>byte</a></h1>
+            <h1><a href="/">byte<span>x</span>byte</a></h1>
           </header>
           <article>
             <p>is the programming journal of <a
@@ -180,7 +180,7 @@ def get_templates():
             <p>
             {% for service, url in author.elsewhere.items() %}
               <a href="{{ url }}">{{ service }}</a>
-              {% if not forloop.last %}, {% endif %}
+              {% if not loop.last %}, {% endif %}
             {% endfor %}
             </p>
           </article>
@@ -212,240 +212,315 @@ def get_templates():
 
     'detail.html': """
     {% extends "base.html" %}
-    {% block title %}
-      <a href="/">{{ body_title }}</a>
-    {% endblock %}
     {% block content %}
-      {% set display_content = True %}
-      {% set plain_title = True %}
-      {% include '_entry.html' %}
+      <section id="writing">
+        {% include '_entry.html' %}
+      </section><!--/#writing-->
     {% endblock %}
     """,
 
     '_preview.html': """
+    <article class="clearfloat">
+      <header>
+        <time datetime="{{ entry.date.iso8601 }}">
+          {{ entry.date.display }}
+        </time>
+        <h2><a href="/{{ entry.slug }}" rel="bookmark">
+          {{ entry.title }}
+        </a></h2>
+      </header>
+      <section class="body">
+        {{ entry.content_html }}
+      </section><!--/.body-->
+    </article>
     """,
 
     '_entry.html': """
-    <div class="hentry">
-      <abbr class="updated" title="{{ entry.date.iso8601 }}">
-        {{ entry.date.display }}
-      </abbr>
-      <h2>
-        {% if plain_title %}
+    <article class="clearfloat">
+      <header>
+        <time datetime="{{ entry.date.iso8601 }}">
+          {{ entry.date.display }}
+        </time>
+        <h2><a href="/{{ entry.slug }}" rel="bookmark">
           {{ entry.title }}
-        {% else %}
-          <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
-        {% endif %}
-      </h2>
-      {% if display_content %}
-        <ul class="tags">
+        </a></h2>
+      </header>
+      <section class="body">
+        <p>
           {% for tag in entry.tags %}
-            <li{% if active_tag == tag %} class="active"{% endif %}>
-              <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
-            </li>
+            <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>
+            {% if not loop.last %}, {% endif %}
           {% endfor %}
-        </ul>
-      {% endif %}
-      {% if display_content %}
-        <div class="entry-content">{{ entry.content_html }}</div>
-      {% endif %}
-    </div>
+        </p>
+        {{ entry.content_html }}
+      </section><!--/.body-->
+    </article>
     """,
 
     '404.html': """
     {% extends "base.html" %}
-    {% block title %}
-      <a href="/">{{ body_title }}</a>
-    {% endblock %}
     {% block content %}
       <p>Resource not found. Go back to <a href="/">the front</a> page.</p>
     {% endblock %}
     """,
 
     STYLESHEET: """
+    /* ----- the reset ----- */
+
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, font, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, input, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ----- the basics ----- */
+
     body {
-      color: #444;
-      font-size: 1em;
-      font-family: 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif;
-      line-height: 1.6;
-      padding: 0 3em 0 13em;
-      width: 40em;
-    }
-
-    @font-face {
-      font-family: "Sorts Mill Goudy";
-      src: url("/OFLGoudyStM.otf");
-    }
-
-    a {
-      color: #444;
+        background:#0c0c0c;
+        color:#fff;
+        font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+        font-size:16px;
+        padding-top:20px;
     }
 
     p {
-      margin-bottom: 1em;
+        line-height:28px;
+        margin-top:28px;
+        margin-bottom:28px;
     }
 
-    ul, ol {
-      padding: 0;
+    a {
+        color:#fff;
+        outline:none;
+    }
+
+    a:hover {
+        background:#bc0d3c;
+        text-decoration:none;
+    }
+
+    pre {
+        background:#000;
+        line-height:28px;
+    }
+
+    pre code {
+        display:block;
+        padding:24px 20px 32px;
+        overflow:scroll;
+    }
+
+    code {
+        background:#000;
+        padding:0 5px;
+    }
+
+    abbr {
+        border-bottom:1px dotted #fff;
+        cursor:help;
     }
 
     blockquote {
-      font-style: italic;
-      margin: 0;
+        background:#161616;
+        font-family:georgia,serif;
+        font-style:italic;
+        padding:28px 34px;
     }
 
-      blockquote em {
-        font-weight: bold;
-      }
-
-    pre, code {
-      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-                   Consolas, Monaco, 'Lucida Console', monospaced;
-      font-size: .75em;
+    blockquote p {
+        margin:0;	
     }
 
-      pre {
-        border: 0.15em solid #eee;
-        border-left: 1em solid #eee;
-        display: block;
-        padding: 1em 1em 1em 2em;
-      }
+    /* ----- the sidebar ----- */
 
-    h1 {
-      font-size: 2.5em;
-      margin: 1.5em 0 1em 0;
+    #site-info {
+        position:absolute;
+        top:60px;
+        left:720px;
+        overflow:hidden;
+        width:360px;
     }
 
-    h2 {
-      font-size: 3em;
+    #site-info header h1 {
+        font-size:76px;
+        line-height:84px;
+        margin:33px 0 -7px;
     }
 
-    h3 {
-      font-size: 2em;
+    #site-info header h1 a {
+        text-decoration:none;
+        text-shadow:0 2px 2px #000;
     }
 
-    img {
-      margin: 1em 0 1em 0;
+    #site-info header h1 a:hover {
+        background:none;
+        color:#cd0053;
     }
 
-    table {
-      margin-top: 1em;
+    #site-info header h1 a span {
+        color:#cd0053;
     }
 
-      table th, table td {
-        padding-right: 1em;
-        text-align: left;
-      }
-
-      table.hanging {
-        display: inline;
-        float: left;
-        padding: 0;
-        margin: 1em 1em 1em -10em;
-      }
-
-        table caption {
-          caption-side: bottom;
-          color: #666;
-          font-size: .75em;
-          padding: 0 1em;
-          text-align: left;
-        }
-
-          table.hanging img {
-            border: .1em solid #ddd;
-            margin: 0;
-            padding: .5em;
-          }
-
-    h1 a, h2 a, h3 a, ul.tags a {
-      text-decoration: none;
+    #site-info header h1 a:hover span {
+        color:#fff;
     }
 
-    h1, h1 a, h2, h2 a, h3 {
-      color: #222;
+    #site-info header h2 {
+        color:#8c8c8c;
+        font-size:24px;
+        line-height:28px;
+        margin:2px 0 -40px;
     }
 
-      h1 a:hover, h2 a:hover {
-        color: #c00;
-      }
-
-    h1, h2, h3, abbr.updated {
-      font-family: "Sorts Mill Goudy", Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
-      font-style: normal;
-      font-weight: normal;
+    #site-info article {
+        color:#8c8c8c;
+        line-height:1.8em;
     }
 
-    abbr.updated, ul.tags {
-      float: left;
+    /* ----- the articles ----- */
+
+    #writing,
+    #previews {
+        background:#1c1c1c;
+        border-right:20px solid #161616;
+        border-left:20px solid #161616;
+        display:block;
+        height:100%;
+        margin:0 0 0 20px;
+        padding:28px 36px 56px 0;
+        width:604px;
     }
 
-      abbr.updated {
-        border: 0;
-        color: #c00;
-        font-size: 1.6em;
-        line-height: 3.25em;
-        margin: 0 0 0 -6.25em;
-      }
-
-    ul.tags {
-      list-style-type: none;
-      margin: 0 0 0 -10em;
+    #writing article,
+    #previews article {
+        clear:both;
+        display:block;
     }
 
-      ul.tags li {
-        display: block;
-        font-size: .8em;
-        margin-bottom: .3em;
-      }
-
-        ul.tags li.active a, ul.tags a:hover {
-          color: #c00;
-        }
-
-    .entry-content a {
-      color: #c00;
+    #writing article header h2 a,
+    #previews article header h2 a {
+        background:#b7003d;	
+        border-left:20px solid #920031;
+        color:#fff;
+        float:left;
+        font-size:42px;
+        line-height:56px;
+        margin-bottom:20px;
+        margin-left:-20px;
+        padding:2px 20px 6px;
+        text-decoration:none;
+        text-shadow:0 2px 2px #0c0c0c;
     }
 
-    .entry-content a:hover {
-      color: #000;
+    #writing article header h2 a:hover,
+    #previews article header h2 a:hover {
+        background:#920031;
+        border-left:20px solid #6e0025;
     }
 
-    p#footer {
-      color: #bbb;
-      font-size: .75em;
-      margin-top: 3em;
-      text-align: center;
-      text-indent: 0;
+    #writing article header time,
+    #previews article header time {
+        color:#8c8c8c;
+        display:block;
+        line-height:28px;
+        margin:16px 0 12px 20px;
+        text-shadow:0 1px 1px #0c0c0c;
     }
 
-    p#footer a {
-      color: #999;
+    #writing article section,
+    #previews article section {
+        clear:both;
+        display:block;
+        margin-left:20px;
     }
 
-    #elsewhere {
-      margin: 1em;
-      position: absolute;
-      right: 1em;
-      top: .5em;
-      z-index: 9000;
+    #writing article ol,
+    #writing article ul {
+        margin-left:60px;
     }
 
-    #elsewhere a {
-      background: #c00;
-      border-radius:.3em;
-      -moz-border-radius:.3em;
-      -webkit-border-radius:.3em;
-      color: #fff;
-      display: block;
-      margin-bottom: .5em;
-      opacity: .9;
-      padding: .4em .6em;
-      text-decoration: none;
+    #writing article ol li,
+    #writing article ul li {
+        line-height:28px;
     }
 
-    #elsewhere a:hover {
-      opacity: .6;
+    #writing article h3 {
+        font-size:24px;
+        line-height:28px;
+        margin:28px 0;
+    }
+
+    nav#pagination {
+        display:block;
+        font-size:14px;
+        line-height:28px;
+        margin:28px 20px;
+    }
+
+    nav#pagination .next {
+        float:right;
+    }
+
+    nav#pagination .previous {
+        float:left;
+    }
+
+    /* ----- the footer ----- */
+
+    footer {
+        color:#8c8c8c;
+        display:block;
+        font-size:14px;
+        line-height:28px;
+        margin:0 0 80px 60px;
+        width:600px;
+    }
+
+    footer nav {
+        float:right;
+    }
+
+    /* ----- github ribbon ----- */
+
+    .ribbon {
+        border:0;
+        position:absolute;
+        right:0;
+        top:0;
+        z-index:100;
+    }
+
+    /* 
+     *
+     * Cleafloat: A Haiku
+     * 
+     * Markup zealots, please:
+     * overflow:hidden is not
+     * always an option.
+     *
+     */
+
+    .clearfloat:after {
+        display:block;
+        visibility:hidden;
+        clear:both;
+        height:0;
+        content:".";
+    }
+        
+    .clearfloat {
+        display:inline-block;
+    }
+
+    .clearfloat {
+        display:block;
     }
     """,}
     return dict([(k, dedent(v).strip()) for k, v in templates.items()])
