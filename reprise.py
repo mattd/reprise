@@ -208,8 +208,9 @@ def get_templates():
     {% extends "base.html" %}
     {% block content %}
       <section id="previews">
+      {% set truncate_content = True %}
       {% for entry in entries %}
-        {% include '_preview.html' %}
+        {% include '_entry.html' %}
       {% endfor %}
       </section><!--/#previews-->
     {% endblock %}
@@ -224,29 +225,6 @@ def get_templates():
     {% endblock %}
     """,
 
-    '_preview.html': """
-    <article class="clearfloat">
-      <header>
-        <time datetime="{{ entry.date.iso8601 }}">
-          {{ entry.date.display }}
-        </time>
-        <h2><a href="/{{ entry.slug }}" rel="bookmark">
-          {{ entry.title }}
-        </a></h2>
-      </header>
-      <section class="body">
-        <p>{{ entry.content_html|striptags|truncate(300) }} //
-        <a href="/{{ entry.slug }}">Continue</a>.</p>
-        <p class="tags"><strong>Tags:</strong>
-          {% for tag in entry.tags %}
-            <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
-            {% endif %}
-          {% endfor %}
-        </p>
-      </section><!--/.body-->
-    </article>
-    """,
-
     '_entry.html': """
     <article class="clearfloat">
       <header>
@@ -258,7 +236,12 @@ def get_templates():
         </a></h2>
       </header>
       <section class="body">
-        {{ entry.content_html }}
+        {% if truncate_content %}
+          <p>{{ entry.content_html|striptags|truncate(300) }} //
+          <a href="/{{ entry.slug }}">Continue</a>.</p>
+        {% else %}
+          {{ entry.content_html }}
+        {% endif %}
         <p class="tags"><strong>Tags:</strong>
           {% for tag in entry.tags %}
             <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
@@ -469,7 +452,7 @@ def get_templates():
         margin:28px 0;
     }
 
-    p.tags {
+    #previews p.tags {
         margin:-14px 0 42px;
     }
 
