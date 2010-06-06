@@ -64,7 +64,6 @@ def read_and_parse_entries():
             with open(file, 'r') as open_file:
                 msg = email.message_from_file(open_file)
                 date = datetime(*[int(d) for d in meta[0:3]])
-                content = msg.get_payload()
                 entries.append({
                     'slug': slugify(meta[3]),
                     'title': meta[3].replace('.', ' '),
@@ -72,8 +71,7 @@ def read_and_parse_entries():
                     'date': {'iso8601': date.isoformat(),
                              'rfc3339': rfc3339(date),
                              'display': date.strftime('%B %d, %Y'),},
-                    'excerpt_html': smartyPants(_markdown(content[:150] + '...')),
-                    'content_html': smartyPants(_markdown(content)),
+                    'content_html': smartyPants(_markdown(msg.get_payload())),
                 })
     return entries
 
@@ -136,7 +134,7 @@ def generate_atom(entries, feed_url):
 
 def write_file(file_name, contents):
     with open(file_name, 'w') as open_file:
-        open_file.write(contents)
+        open_file.write(contents.encode("utf-8"))
 
 def slugify(str):
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '',
@@ -198,9 +196,9 @@ def get_templates():
           <nav>
             <strong>feeds:</strong> <a href="{{ feed_url }}">atom</a>
           </nav>
-          <p>&copy; {{ author.name }}. <a href="http://github.com/uggdeal/reprise/">
-          Reprise</a> powered. Hosted in <a href="http://rackspacecloud.com">
-          the cloud</a>.</p>
+          <p>&copy; {{ author.name }}. 
+          <a href="http://github.com/uggdeal/reprise/"> Reprise</a> powered.
+          Hosted in <a href="http://rackspacecloud.com"> the cloud</a>.</p>
         </footer>
       </body>
     </html>
@@ -237,8 +235,9 @@ def get_templates():
         </a></h2>
       </header>
       <section class="body">
-        {{ entry.excerpt_html|striptags }}
-        <p>
+        <p>{{ entry.content_html|striptags|truncate(300) }} //
+        <a href="/{{ entry.slug }}">Continue</a>.</p>
+        <p class="tags"><strong>Tags:</strong>
           {% for tag in entry.tags %}
             <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
             {% endif %}
@@ -260,7 +259,7 @@ def get_templates():
       </header>
       <section class="body">
         {{ entry.content_html }}
-        <p>
+        <p class="tags"><strong>Tags:</strong>
           {% for tag in entry.tags %}
             <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
             {% endif %}
@@ -470,20 +469,14 @@ def get_templates():
         margin:28px 0;
     }
 
-    nav#pagination {
-        display:block;
-        font-size:14px;
-        line-height:28px;
-        margin:28px 20px;
+    p.tags {
+        margin:-14px 0 42px;
     }
 
-    nav#pagination .next {
-        float:right;
+    p.tags strong {
+        color:#8c8c8c;
     }
-
-    nav#pagination .previous {
-        float:left;
-    }
+    
 
     /* ----- the footer ----- */
 
