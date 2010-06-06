@@ -301,15 +301,11 @@ def get_templates():
         text-decoration:none;
     }
 
-    pre {
+    .codehilite {
         background:#000;
         line-height:28px;
-    }
-
-    pre code {
-        display:block;
-        padding:24px 20px 32px;
         overflow:scroll;
+        padding:24px 20px 32px;
     }
 
     code {
