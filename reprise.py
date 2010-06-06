@@ -31,6 +31,7 @@ AUTHOR = {
         'delicious': 'http://delicious.com/matthewtdawson/',
         'Facebook': 'http://facebook.com/mattdawson/',
         'flickr': 'http://flickr.com/photos/matthewtdawson/',
+        'irc': 'http://searchirc.com/whois/mattdawson/',
         'The Nested Float': 'http://thenestedfloat.com/',
         'twitter': 'http://twitter.com/mattdawson/',
     }
