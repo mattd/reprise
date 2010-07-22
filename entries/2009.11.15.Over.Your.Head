@@ -1,0 +1,17 @@
+Tags: study 
+
+For someone who graduated college with an English degree and has four years of experience in web development &ndash; with only one of those spent programming &ndash; Charlottesville's burgeoning co-working scene is pretty exciting. [OpenSpace](http://getopenspace.com) seems to be off to a good start, and by my estimation, the most well represented group of folks visiting regularly are programmers. The best way to supplement your own study &ndash; of anything, really &ndash; is to surround yourself by people that are passionate about the subject at hand. So I'm in luck.
+
+Plus, there's [PyCHO](http://pycho.us). Only a few months after I started using [Django](http://djangoproject.com), Charlottesville's Python User Group appeared out of nowhere. It's a great group, and if you're in the Charlottesville area, we'd love it if you stopped by.
+
+But as a relative neophyte, I've wondered how to make the most of these opportunities. So far I've come to one conclusion.
+
+### Being in over your head is good for you.
+
+This lesson goes by another name that may be more familiar: fake it 'til you make it. This has been an important realization for me here in Charlottesville; our tech community is wicked smart. I can't tell you the number of times this year I've stopped people mid-sentence to define a phrase or repeat that phrase so I can do a quick google. And even if you still have no idea what's going on, there's some benefit to being exposed to a concept. 
+
+Case in point: MVC meant nothing to me the first three times I had the pattern described to me, but ten minutes into my first Django project, it made sense. In hopes of forcing that same kind of realization, I've read the [Wikipedia entry for MapReduce](http://en.wikipedia.org/wiki/MapReduce) a good ten times. I'm hoping all that brain jogging will pay off if I ever get a chance to use it.
+
+Now, though, I'm realizing there's a corollary to that lesson about faking it. Namely, you can't be afraid to expose your crap code. I'm glad to say I'm finally getting over the temptation to only show off the stuff I know is clean, smart work. That hacky nonsense I wrote last week? I know it sucks, but I don't know the full extent of *why*.
+
+I'm in *way* over my head. But who's to say that can't be fun? 

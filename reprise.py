@@ -19,17 +19,21 @@ from jinja2 import DictLoader, Environment
 from lxml.builder import ElementMaker
 from lxml.etree import tostring
 
-TITLE = 'Journal'
-URL = 'http://journal.uggedal.com'
-STYLESHEET = 'style2.css'
+TITLE = 'bytexbyte'
+URL = 'http://bytexbyte.com'
+STYLESHEET = 'styles.css'
 
 AUTHOR = {
-    'name': 'Eivind Uggedal',
-    'email': 'eivind@uggedal.com',
-    'url': 'http://uggedal.com',
+    'name': 'Matt Dawson',
+    'url': 'http://bytexbyte.com',
     'elsewhere': {
-        '@uggedal': 'http://twitter.com/uggedal/',
-        'Was it up?': 'http://wasitup.com/',
+        'Dawsoning': 'http://dawsoning.com/',
+        'delicious': 'http://delicious.com/matthewtdawson/',
+        'Facebook': 'http://facebook.com/mattdawson/',
+        'flickr': 'http://flickr.com/photos/matthewtdawson/',
+        'irc': 'http://searchirc.com/whois/mattdawson',
+        'The Nested Float': 'http://thenestedfloat.com/',
+        'twitter': 'http://twitter.com/mattdawson/',
     }
 }
 
@@ -43,10 +47,8 @@ DIRS = {
 
 CONTEXT = {
     'author': AUTHOR,
-    'body_title': "%s of %s" % (TITLE, AUTHOR['name']),
-    'head_title': "%s of %s" % (TITLE, AUTHOR['name']),
-    'analytics': 'UA-1857692-3',
     'stylesheet': STYLESHEET,
+    'head_title': "%s" % TITLE,
 }
 
 def _markdown(content):
@@ -69,7 +71,7 @@ def read_and_parse_entries():
                     'tags': msg['Tags'].split(),
                     'date': {'iso8601': date.isoformat(),
                              'rfc3339': rfc3339(date),
-                             'display': date.strftime('%Y-%m-%d'),},
+                             'display': date.strftime('%B %d, %Y'),},
                     'content_html': smartyPants(_markdown(msg.get_payload())),
                 })
     return entries
@@ -154,302 +156,357 @@ def rfc3339(date):
 def get_templates():
     templates = {
     'base.html': """
-    <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
-    "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
+    <!DOCTYPE html>
+    <html lang="en">
       <head>
         <title>{{ head_title }}</title>
-        <link rel='stylesheet' type='text/css' href='/{{ stylesheet }}'>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="/{{ stylesheet }}">
         <link rel="alternate" type="application/atom+xml"
               title="{{ head_title }}" href="{{ feed_url }}">
+        <link rel="openid.server" href="http://www.myopenid.com/server" />
+        <link rel="openid.delegate" href="http://mattdawson.myopenid.com/" />
       </head>
       <body>
-        <h1>
-          {% block title %}
-          {% endblock %}
-        </h1>
+        <a href="http://github.com/mattd"><img class="ribbon"
+        src="http://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+        alt="Fork me on GitHub"></a>
+        <section id="site-info">
+          <header>
+            <h2>busy building</h2>
+            <h1><a href="/">byte<span>x</span>byte</a></h1>
+          </header>
+          <article>
+            <p>is the programming journal of <a
+            href="http://www.google.com/profiles/matthewtdawson">
+            {{ author.name }}</a>, a professional web developer and tech junkie 
+            from Charlottesville, VA USA.</p>
+            <p>Wanna get in touch? Email matt at this domain dot com.  I'll be 
+            pleasant. Promise.</p>
+            <p><strong>Elsewhere:</strong>
+            {% for service, url in author.elsewhere.items() %}
+              <a href="{{ url }}">{{ service }}</a>{% if not loop.last %},
+              {% endif %}
+            {% endfor %}
+            </p>
+          </article>
+        </section><!--/#site-info-->
         {% block content %}
         {% endblock %}
-        <p id="elsewhere">
-        {% for service, url in author.elsewhere.items() %}
-          <a href="{{ url }}">{{ service }}</a>
-        {% endfor %}
-        </p>
-        <p id="footer">
-          <span class="author vcard">
-            Written by
-            <a class="url fn" href="{{ author.url }}">{{ author.name }}</a>
-            &lt;<a class="email" href="mailto:{{ author.email }}">{{ author.email }}</a>&gt;.
-          </span>
-          Powered by
-          <a href="http://github.com/uggedal/reprise">reprise.py</a>.
-        </p>
+        <footer>
+          <nav>
+            <strong>feeds:</strong> <a href="{{ feed_url }}">atom</a>
+          </nav>
+          <p>&copy; {{ author.name }}. 
+          <a href="http://github.com/uggdeal/reprise/"> Reprise</a> powered.
+          Hosted in <a href="http://rackspacecloud.com"> the cloud</a>.</p>
+        </footer>
       </body>
-      <script type='text/javascript'>
-        var gaJsHost = (("https:" == document.location.protocol) ?
-                       "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost +
-                                "google-analytics.com/ga.js' type='text/" +
-                                "javascript'%3E%3C/script%3E"));
-      </script>
-      <script type='text/javascript'>
-        var pageTracker = _gat._getTracker("{{ analytics }}");
-        pageTracker._initData();
-        pageTracker._trackPageview();
-      </script>
     </html>
     """,
 
     'list.html': """
     {% extends "base.html" %}
-    {% block title %}
-      {% if active_tag %}
-        <a href="/">{{ body_title }}</a>
-      {% else %}
-        {{ body_title }}
-      {% endif %}
-    {% endblock %}
     {% block content %}
+      <section id="previews">
+      {% set truncate_content = True %}
       {% for entry in entries %}
-        {% set display_content = loop.first %}
         {% include '_entry.html' %}
       {% endfor %}
+      </section><!--/#previews-->
     {% endblock %}
     """,
 
     'detail.html': """
     {% extends "base.html" %}
-    {% block title %}
-      <a href="/">{{ body_title }}</a>
-    {% endblock %}
     {% block content %}
-      {% set display_content = True %}
-      {% set plain_title = True %}
-      {% include '_entry.html' %}
+      <section id="writing">
+        {% include '_entry.html' %}
+      </section><!--/#writing-->
     {% endblock %}
     """,
 
     '_entry.html': """
-    <div class="hentry">
-      <abbr class="updated" title="{{ entry.date.iso8601 }}">
-        {{ entry.date.display }}
-      </abbr>
-      <h2>
-        {% if plain_title %}
+    <article class="clearfloat">
+      <header>
+        <time datetime="{{ entry.date.iso8601 }}">
+          {{ entry.date.display }}
+        </time>
+        <h2><a href="/{{ entry.slug }}" rel="bookmark">
           {{ entry.title }}
+        </a></h2>
+      </header>
+      <section class="body">
+        {% if truncate_content %}
+          <p>{{ entry.content_html|striptags|truncate(300) }} //
+          <a href="/{{ entry.slug }}">Continue</a>.</p>
         {% else %}
-          <a href="/{{ entry.slug }}" rel="bookmark">{{ entry.title }}</a>
+          {{ entry.content_html }}
         {% endif %}
-      </h2>
-      {% if display_content %}
-        <ul class="tags">
+        <p class="tags"><strong>Tags:</strong>
           {% for tag in entry.tags %}
-            <li{% if active_tag == tag %} class="active"{% endif %}>
-              <a href="/tags/{{ tag }}" rel="tag" >{{ tag }}</a>
-            </li>
+            <a href="/tags/{{ tag }}" rel="tag">{{ tag }}</a>{% if not loop.last %},
+            {% endif %}
           {% endfor %}
-        </ul>
-      {% endif %}
-      {% if display_content %}
-        <div class="entry-content">{{ entry.content_html }}</div>
-      {% endif %}
-    </div>
+        </p>
+      </section><!--/.body-->
+    </article>
     """,
 
     '404.html': """
     {% extends "base.html" %}
-    {% block title %}
-      <a href="/">{{ body_title }}</a>
-    {% endblock %}
     {% block content %}
       <p>Resource not found. Go back to <a href="/">the front</a> page.</p>
     {% endblock %}
     """,
 
     STYLESHEET: """
+    /* ----- the reset ----- */
+
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, font, img, ins, kbd, q, s, samp,
+    small, strike, strong, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, input, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ----- the basics ----- */
+
     body {
-      color: #444;
-      font-size: 1em;
-      font-family: 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, sans-serif;
-      line-height: 1.6;
-      padding: 0 3em 0 13em;
-      width: 40em;
-    }
-
-    @font-face {
-      font-family: "Sorts Mill Goudy";
-      src: url("/OFLGoudyStM.otf");
-    }
-
-    a {
-      color: #444;
+        background:#0c0c0c;
+        color:#fff;
+        font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+        font-size:16px;
+        padding-top:20px;
     }
 
     p {
-      margin-bottom: 1em;
+        line-height:28px;
+        margin-top:28px;
+        margin-bottom:28px;
     }
 
-    ul, ol {
-      padding: 0;
+    a {
+        color:#fff;
+        outline:none;
+    }
+
+    a:hover {
+        background:#bc0d3c;
+        text-decoration:none;
+    }
+
+    .codehilite {
+        background:#000;
+        line-height:28px;
+        overflow:scroll;
+        padding:24px 20px 32px;
+    }
+
+    code {
+        background:#000;
+        padding:0 5px;
+    }
+
+    abbr {
+        border-bottom:1px dotted #fff;
+        cursor:help;
     }
 
     blockquote {
-      font-style: italic;
-      margin: 0;
+        background:#161616;
+        font-family:georgia,serif;
+        font-style:italic;
+        padding:28px 34px;
     }
 
-      blockquote em {
-        font-weight: bold;
-      }
-
-    pre, code {
-      font-family: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-                   Consolas, Monaco, 'Lucida Console', monospaced;
-      font-size: .75em;
+    blockquote p {
+        margin:0;	
     }
 
-      pre {
-        border: 0.15em solid #eee;
-        border-left: 1em solid #eee;
-        display: block;
-        padding: 1em 1em 1em 2em;
-      }
+    /* ----- the sidebar ----- */
 
-    h1 {
-      font-size: 2.5em;
-      margin: 1.5em 0 1em 0;
+    #site-info {
+        position:absolute;
+        top:60px;
+        left:720px;
+        overflow:hidden;
+        width:360px;
     }
 
-    h2 {
-      font-size: 3em;
+    #site-info header h1 {
+        font-size:76px;
+        line-height:84px;
+        margin:33px 0 -7px;
     }
 
-    h3 {
-      font-size: 2em;
+    #site-info header h1 a {
+        text-decoration:none;
+        text-shadow:0 2px 2px #000;
     }
 
-    img {
-      margin: 1em 0 1em 0;
+    #site-info header h1 a:hover {
+        background:none;
+        color:#cd0053;
     }
 
-    table {
-      margin-top: 1em;
+    #site-info header h1 a span {
+        color:#cd0053;
     }
 
-      table th, table td {
-        padding-right: 1em;
-        text-align: left;
-      }
-
-      table.hanging {
-        display: inline;
-        float: left;
-        padding: 0;
-        margin: 1em 1em 1em -10em;
-      }
-
-        table caption {
-          caption-side: bottom;
-          color: #666;
-          font-size: .75em;
-          padding: 0 1em;
-          text-align: left;
-        }
-
-          table.hanging img {
-            border: .1em solid #ddd;
-            margin: 0;
-            padding: .5em;
-          }
-
-    h1 a, h2 a, h3 a, ul.tags a {
-      text-decoration: none;
+    #site-info header h1 a:hover span {
+        color:#fff;
     }
 
-    h1, h1 a, h2, h2 a, h3 {
-      color: #222;
+    #site-info header h2 {
+        color:#8c8c8c;
+        font-size:24px;
+        line-height:28px;
+        margin:2px 0 -40px;
     }
 
-      h1 a:hover, h2 a:hover {
-        color: #c00;
-      }
-
-    h1, h2, h3, abbr.updated {
-      font-family: "Sorts Mill Goudy", Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', serif;
-      font-style: normal;
-      font-weight: normal;
+    #site-info article {
+        color:#8c8c8c;
+        line-height:1.8em;
     }
 
-    abbr.updated, ul.tags {
-      float: left;
+    /* ----- the articles ----- */
+
+    #writing,
+    #previews {
+        background:#1c1c1c;
+        border-right:20px solid #161616;
+        border-left:20px solid #161616;
+        display:block;
+        height:100%;
+        margin:0 0 0 20px;
+        padding:28px 36px 56px 0;
+        width:604px;
     }
 
-      abbr.updated {
-        border: 0;
-        color: #c00;
-        font-size: 1.6em;
-        line-height: 3.25em;
-        margin: 0 0 0 -6.25em;
-      }
-
-    ul.tags {
-      list-style-type: none;
-      margin: 0 0 0 -10em;
+    #writing article,
+    #previews article {
+        clear:both;
+        display:block;
     }
 
-      ul.tags li {
-        display: block;
-        font-size: .8em;
-        margin-bottom: .3em;
-      }
-
-        ul.tags li.active a, ul.tags a:hover {
-          color: #c00;
-        }
-
-    .entry-content a {
-      color: #c00;
+    #writing article header h2 a,
+    #previews article header h2 a {
+        background:#b7003d;	
+        border-left:20px solid #920031;
+        color:#fff;
+        float:left;
+        font-size:42px;
+        line-height:56px;
+        margin-bottom:20px;
+        margin-left:-20px;
+        padding:2px 20px 6px;
+        text-decoration:none;
+        text-shadow:0 2px 2px #0c0c0c;
     }
 
-    .entry-content a:hover {
-      color: #000;
+    #writing article header h2 a:hover,
+    #previews article header h2 a:hover {
+        background:#920031;
+        border-left:20px solid #6e0025;
     }
 
-    p#footer {
-      color: #bbb;
-      font-size: .75em;
-      margin-top: 3em;
-      text-align: center;
-      text-indent: 0;
+    #writing article header time,
+    #previews article header time {
+        color:#8c8c8c;
+        display:block;
+        line-height:28px;
+        margin:16px 0 12px 20px;
+        text-shadow:0 1px 1px #0c0c0c;
     }
 
-    p#footer a {
-      color: #999;
+    #writing article section,
+    #previews article section {
+        clear:both;
+        display:block;
+        margin-left:20px;
     }
 
-    #elsewhere {
-      margin: 1em;
-      position: absolute;
-      right: 1em;
-      top: .5em;
-      z-index: 9000;
+    #writing article ol,
+    #writing article ul {
+        margin-left:60px;
     }
 
-    #elsewhere a {
-      background: #c00;
-      border-radius:.3em;
-      -moz-border-radius:.3em;
-      -webkit-border-radius:.3em;
-      color: #fff;
-      display: block;
-      margin-bottom: .5em;
-      opacity: .9;
-      padding: .4em .6em;
-      text-decoration: none;
+    #writing article ol li,
+    #writing article ul li {
+        line-height:28px;
     }
 
-    #elsewhere a:hover {
-      opacity: .6;
+    #writing article h3 {
+        font-size:24px;
+        line-height:28px;
+        margin:28px 0;
+    }
+
+    #previews p.tags {
+        margin:-14px 0 42px;
+    }
+
+    p.tags strong {
+        color:#8c8c8c;
+    }
+    
+
+    /* ----- the footer ----- */
+
+    footer {
+        color:#8c8c8c;
+        display:block;
+        font-size:14px;
+        line-height:28px;
+        margin:0 0 80px 60px;
+        width:600px;
+    }
+
+    footer nav {
+        float:right;
+    }
+
+    /* ----- github ribbon ----- */
+
+    .ribbon {
+        border:0;
+        position:absolute;
+        right:0;
+        top:0;
+        z-index:100;
+    }
+
+    /* 
+     *
+     * Cleafloat: A Haiku
+     * 
+     * Markup zealots, please:
+     * overflow:hidden is not
+     * always an option.
+     *
+     */
+
+    .clearfloat:after {
+        display:block;
+        visibility:hidden;
+        clear:both;
+        height:0;
+        content:".";
+    }
+        
+    .clearfloat {
+        display:inline-block;
+    }
+
+    .clearfloat {
+        display:block;
     }
     """,}
     return dict([(k, dedent(v).strip()) for k, v in templates.items()])

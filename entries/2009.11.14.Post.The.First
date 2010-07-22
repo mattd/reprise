@@ -1,0 +1,13 @@
+Tags: meta 
+
+I've got sign posts up all over the web, including two blogs: [one](http://www.thenestedfloat.com) that tried to be a tumblelog and will someday soon be reborn in a completely different form, and [one](http://dawsoning.com) loved by family that pretty much takes care of itself. bytexbyte (that's "byte by byte" if you hadn't figured it out yet) is one part of my attempt to *really* focus and apply some discipline to the practice of programming. This is meant to be (more or less) a single purpose blog, one that mirrors the pastime I'm most passionate about.
+
+It's been an exciting year. Most importantly, [my son](http://dawsoning.com/tags/asherdawson) was born. Plus, there was at least one other great thing that happened: I started thinking of myself as a programmer. I've been building websites for awhile now, but a lot of stuff has started to click. I've got a feeling that more big ah-ha moments are close at hand, and I like to share.
+
+### A little colophon.
+
+I know the design is dead simple, but boy, was it fun to put together. It's one of the first sites I've built solely in css and html. Didn't even put a pencil to a page. It seemed fitting, given the subject matter I plan on covering.
+
+The backend? That's the fun part. I'm running bytexbyte with [Ryan McGuire](http://www.enigmacurry.com)'s [Blogofile](http://blogofile.org), a static blog generator written in Python. It's all static html and css, so it's a breeze to serve it from [nginx](http://nginx.com).
+
+A big hat tip to [Ron](http://github.com/rduplain) for talking it up. Plans are afoot to give Ryan a hand with the development. It's gonna be a blast.
