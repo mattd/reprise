@@ -198,7 +198,7 @@ def get_templates():
             <strong>feeds:</strong> <a href="{{ feed_url }}">atom</a>
           </nav>
           <p>&copy; {{ author.name }}. 
-          <a href="http://github.com/uggdeal/reprise/"> Reprise</a> powered.
+          <a href="http://github.com/uggedal/reprise/"> Reprise</a> powered.
           Hosted in <a href="http://rackspacecloud.com"> the cloud</a>.</p>
         </footer>
       </body>
