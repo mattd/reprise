@@ -28,10 +28,9 @@ AUTHOR = {
     'url': 'http://twitter.com/rduplain',
     'elsewhere': {
         'venue': 'http://getopenspace.com/',
-        'lunch': 'http://www.ordertopia.com/shop/eppies',
         '#beSwarm': 'http://search.twitter.com/search?q=%23beSwarm',
         'map': 'http://maps.google.com/maps?q=455+Second Street+SE+Suite+100+Charlottesville+VA+22902',
-        'sign up': 'http://barcamp.org/beSwarm1',
+        'sign up': 'http://barcamp.org/beSwarm2',
     }
 }
 
