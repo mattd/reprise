@@ -1,0 +1,27 @@
+Tags: bash ssh 
+
+I've [written before](/the-magic-of-screen) about bash tools good enough to make you rethink the way you work in your shell. While [bash completion](http://bash-completion.alioth.debian.org/) may not be a game-changer, it's slick enough to make me smile every time I use it. And I've been using it *a lot*.
+
+Now, granted, bash completion's greatest strength is that it provides a [relatively simple interface](http://www.debian-administration.org/article/An_introduction_to_bash_completion_part_1) for adding nice bash completion to your own CLI tools. Because that's the only context under which I'd heard it mentioned, I filed it in the "good to know" category for future projects. What I missed was one specific tool that's baked in to bash completion from the start: scp file path expansion.
+
+You heard me right. Start typing this,
+
+    scp bytexbyte.com:/var/www/b
+
+hit tab a few times, and voila!
+
+    scp bytexbyte.com:/var/www/bytexbyte.com/public/complete-me.html
+
+I cannot tell you how many times I've opened a second terminal tab and a new ssh connection to a server, just so I could `ls` the location of the file I needed.
+
+If you're on Ubuntu or Debian, get it in the usual way.
+
+    sudo apt-get install bash-completion
+
+Then source it in your .bashrc.
+
+    if [[ -s /etc/bash_completion ]]; then
+		source /etc/bash_completion
+	fi
+
+Huge hat tip to [@johnchapin](http://twitter.com/johnchapin/) for the tip.
