@@ -164,8 +164,8 @@ def get_templates():
         <link rel="stylesheet" type="text/css" href="/{{ stylesheet }}">
         <link rel="alternate" type="application/atom+xml"
               title="{{ head_title }}" href="{{ feed_url }}">
-        <link rel="openid.server" href="http://www.myopenid.com/server" />
-        <link rel="openid.delegate" href="http://mattdawson.myopenid.com/" />
+        <link rel="openid.server" href="http://www.myopenid.com/server">
+        <link rel="openid.delegate" href="http://mattdawson.myopenid.com/">
       </head>
       <body>
         <a href="http://github.com/mattd"><img class="ribbon"
