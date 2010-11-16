@@ -199,7 +199,7 @@ def get_templates():
           </nav>
           <p>&copy; {{ author.name }}. 
           <a href="http://github.com/uggedal/reprise/"> Reprise</a> powered.
-          Hosted in <a href="http://rackspacecloud.com"> the cloud</a>.</p>
+          Hosted in <a href="http://aws.amazon.com"> the cloud</a>.</p>
         </footer>
       </body>
     </html>
