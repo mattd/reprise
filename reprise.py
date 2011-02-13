@@ -28,8 +28,8 @@ AUTHOR = {
     'url': 'http://bytexbyte.com',
     'elsewhere': {
         'Dawsoning': 'http://dawsoning.com/',
-        'delicious': 'http://delicious.com/matthewtdawson/',
-        'Facebook': 'http://facebook.com/mattdawson/',
+        'Pinboard': 'http://pinboard.in/u:mattdawson/',
+        'Facebook': 'http://facebook.com/matthewtdawson/',
         'flickr': 'http://flickr.com/photos/matthewtdawson/',
         'irc': 'http://searchirc.com/whois/mattdawson',
         'The Nested Float': 'http://thenestedfloat.com/',
