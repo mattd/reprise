@@ -1,0 +1,57 @@
+Tags: mobileweb css
+
+Two months ago, I joined [WillowTree Apps](http://www.willowtreeapps.com) to head up their mobile web department. So far, it's been an absolute blast. We're up to some really great stuff at WillowTree, and I'm looking forward to a year full of big news as our mobile web offerings continue to mature and take shape. No doubt, you'll hear me talking a lot more about the promise of a truly mobile web in the months and years to come. It's a very exciting space.
+
+###The Challenge
+
+While working on a mobile web demo for a potential WillowTree client, I was confronted with a problem I'd never faced as a desktop web developer. Our designer had done PSD mockups for the site in question that measured 640px by 960px &ndash; the width and height of the iPhone 4. What do we do, I asked the team, about devices with other resolutions? As it turned out that wasn't a problem here. This was just a demo, the client would only ever see the demo on an iPhone 4, and we wanted that demo to look as sharp as possible.
+
+If you've done any mobile web development, you probably know that the iPhone 4, though equipped with a high-res 640x960 screen, actually reports a viewport of 320x480 &ndash; the width and height of the original iPhone display. (I won't, for the sake of brevity, get into mobile web viewports here. It's a crazy-complex topic, and Peter Paul-Koch has [covered it](http://www.quirksmode.org/mobile/viewports.html) extensively and expertly.) This means that if you use assets sized for the full retina display, those assets will take up twice as much space as you intend. One solution is to do mockups that are sized for standard pixel densities. But when you view these designs on an iPhone 4, they appear pixelated; the iPhone 4's display is capable of so much more.
+
+For the demo, it turns out there was an easy solution: Force the iPhone to display the page at the correct size by "zooming out" the display to full resolution.
+
+    <meta name="viewport" content="width=640,user-scalable=false">
+
+This was great for the demo. Assets were clear and crisp &ndash; exactly what you'd expect on the lovely retina display. But what happens when you have to deal with mobile browsers in the real world? Is it really necessary to deliver assets that *don't* make full use of high pixel density displays like the iPhone 4 and the army of high-res devices that are sure to follow?
+
+The answer, thankfully, is no.
+
+###The Solution
+
+As it turns out, it's fairly simple to deliver one set of high-res images for high pixel density devices and another for standard pixel density ones &ndash; that is, as long as these are images set as background images via CSS. All it takes is a CSS media query and one super &ndash; and seldom used &ndash; CSS rule: `background-size`.
+
+First, you'll want to use a viewport tag that's quickly becoming the defacto standard for mobile web devs everywhere.
+
+    <meta name="viewport" content="width=device-width">
+
+This is a sane default. It essentially leaves the matter of viewport scaling up to the device. And the device *should* know best, right? If you want to add a couple other web-appy rules, you could also do something like this:
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+
+Here's where the extra work comes in. If you're starting from a design that's optimized for high pixel density devices, you'll want to cut up your first set of assets at the resolution of the design. Once you're done, resize each of the assets to be some percentage of the original size. I tend to do an exact 50% reduction.
+
+Your main CSS will use the standard resolution set of assets. Your CSS might look something like this:
+
+    article .summary a {
+        background:url(../images/btn_summary.png) no-repeat center center;
+        display:block;
+    }
+
+Let's say the standard res version of the button in question was 10px tall by 20px wide. The high-res version is twice as big &ndash; 20px tall by 40px wide. To deliver a higher res version to devices that can handle it, wrap alternate CSS in a [media query](http://www.quirksmode.org/blog/archives/2010/09/combining_meta.html) that targets devices with a greater pixel ration using the webkit-only `min-device-pixel-ratio` rule. Use the higher-res image in this rule. Then, to correctly "zoom out" on the background image, set the `background-size` on that element to the width of the standard res image. So:
+
+    @media all and (-webkit-min-device-pixel-ratio: 2) {
+		article .summary a {
+            background:url(../images/hd/btn_summary.png) no-repeat center center;
+		    background-size:20px;
+		}
+	}
+
+If you've been paying close attention, you'll have noticed a couple implicit caveats.
+
+1. This only works for webkit enabled devices. For now, the highest selling devices with higher than normal pixel ratios use a webkit-based rendering engine. Hopefully, the `min-device-pixel-ratio` rule will become part of the standard CSS spec at some point; it's wicked useful.
+
+2. This won't help you out with inline images.
+
+Still, you can get a lot of extra "wow" out of a few well-placed, high-res background images. Surprisingly, I have yet to see a mobile site that delivers high-res images to capable displays. Even Google uses a single set of standard resolution image assets in their mobile apps. While I know you may not always *want* to send larger image assets &ndash; bandwidth is precious in the mobile world &ndash; it's a pretty safe bet that high-res devices have a connection that can handle the extra load *if* images are used sparingly and well optimized.
+
+Ultimately, it's up to you as the developer to decide whether the extra bandwidth hit and effort it takes to maintain two sets of assets is worth it. But if you're in the business of making people "Ooooo!" at your websites or mobile apps, it may very well be worth it on both counts.
